@@ -6,7 +6,6 @@ const userSchema = new Schema({
     default: () => Math.floor(Math.random() * 1000000),
     required: true,
   },
-  username: { type: String, unique: true, required: false },
   publicAddress: { type: String, unique: true, required: true },
 });
 
