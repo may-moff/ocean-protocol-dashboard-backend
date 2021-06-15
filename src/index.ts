@@ -1,15 +1,14 @@
 const connection = require('./db-config');
 const express = require('express');
-const app = express();
-const port = process.env.PORT || 3000;
+import { Request, Response, Application } from 'express';
+const app: Application = express();
+const port = process.env.PORT || 8000;
 const cors = require('cors');
 
-// import usersRoute from './routes/usersRoute.js';
-// import connectDB from "./db.js";
 app.use(cors());
 app.use(express.json());
 connection();
-app.get('/', (req, res) => {
+app.get('/', (req: Request, res: Response) => {
   res.send('Main route working');
 });
 
