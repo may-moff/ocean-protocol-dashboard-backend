@@ -1,5 +1,7 @@
 import express from 'express';
+import jwt from 'express-jwt';
 
+import { config } from '../../config';
 import * as controller from './controller';
 
 export const userRouter = express.Router();

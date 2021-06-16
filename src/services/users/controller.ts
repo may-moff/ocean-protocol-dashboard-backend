@@ -1,15 +1,16 @@
 import { NextFunction, Request, Response } from 'express';
-import { User } from '../../models/user.model';
+import { UserModel } from '../../models/user.model';
 
 export const find = async (req: Request, res: Response, next: NextFunction) => {
   // If a query string ?publicAddress=... is given, then filter results
-  const address =
+  const address: any =
     req.query && req.query.publicAddress
       ? { publicAddress: req.query.publicAddress }
       : undefined;
+
   try {
-    const user = await User.findOne(address);
-    res.json(user);
+    const users = await UserModel.find(address);
+    res.json(users);
   } catch (error) {
     console.log(error);
     next;
@@ -23,7 +24,7 @@ export const create = async (
 ) => {
   const { publicAddress } = req.body;
   try {
-    const newUser = new User({ publicAddress });
+    const newUser = new UserModel({ publicAddress });
     await newUser.save();
     res.json(newUser);
   } catch (error) {
