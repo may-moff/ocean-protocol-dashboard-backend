@@ -26,6 +26,7 @@ export const create = async (
   try {
     const newUser = new UserModel({ publicAddress });
     await newUser.save();
+    console.log(newUser);
     res.json(newUser);
   } catch (error) {
     console.log(error);
