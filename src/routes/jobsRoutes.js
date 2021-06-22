@@ -19,6 +19,7 @@ router.get("/jobs/:id", (req, res) => {
 });
 
 router.get("/jobs", (req, res) => {
+  console.log("I'm here");
   res.send({ fakeData });
   console.log(res);
 });

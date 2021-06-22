@@ -2,7 +2,7 @@ const connection = require("./db-config");
 const express = require("express");
 import { Request, Response, Application } from "express";
 const app: Application = express();
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 8002;
 const cors = require("cors");
 import { User } from "./models/user.model";
 import { services } from "./services";
@@ -20,7 +20,7 @@ app.get("/", (req: Request, res: Response) => {
 // Mount REST on /api
 app.use("/api", services);
 
-app.use("/api2", routes);
+app.use("/apii", routes)
 
 app.post("/test", async (req: Request, res: Response) => {
   const { publicAddress } = req.body;
