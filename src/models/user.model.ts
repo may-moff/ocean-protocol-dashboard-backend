@@ -1,12 +1,21 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
-const userSchema = new Schema({
+const crypto = require('crypto');
+import { Schema, model } from 'mongoose';
+
+export interface IUser {
+  _id: string;
+  nonce: number;
+  publicAddress: string;
+  // get back on this to verify how to make it work better
+  save(): any;
+}
+
+const userSchema = new Schema<IUser>({
   nonce: {
     type: Number,
-    default: () => Math.floor(Math.random() * 1000000),
+    default: () => crypto.randomInt(10000, 100000000),
     required: true,
   },
   publicAddress: { type: String, unique: true, required: true },
 });
 
-export const User = mongoose.model('User', userSchema);
+export const UserModel = model<IUser>('User', userSchema);

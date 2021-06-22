@@ -4,7 +4,7 @@ import { Request, Response, Application } from "express";
 const app: Application = express();
 const port = process.env.PORT || 8002;
 const cors = require("cors");
-import { User } from "./models/user.model";
+import { UserModel } from "./models/user.model";
 import { services } from "./services";
 const routes = require("./routes");
 
@@ -13,6 +13,7 @@ const routes = require("./routes");
 app.use(cors());
 app.use(express.json());
 connection();
+
 app.get("/", (req: Request, res: Response) => {
   res.send("Main route working");
 });
@@ -25,7 +26,7 @@ app.use("/apii", routes)
 app.post("/test", async (req: Request, res: Response) => {
   const { publicAddress } = req.body;
   try {
-    const newUser = new User({ publicAddress });
+    const newUser = new UserModel({ publicAddress });
     await newUser.save();
     res.send("User saved");
   } catch (error) {
