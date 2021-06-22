@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const jobsController = require("../controllers/jobsController");
 
 const fakeData = [
   { key: 0, title: "Job Number 1", status: "done" },
@@ -13,15 +14,14 @@ const fakeData = [
   { key: 8, title: "Job Number 9", status: "done" },
 ];
 
-router.get("/jobs/:id", (req, res) => {
-  // res.send(fakeData.filter((key) => key == req.id));
-  // console.log(res);
-});
+router.post("/", jobsController.create);
 
-router.get("/jobs", (req, res) => {
-  console.log("I'm here");
-  res.send({ fakeData });
-  console.log(res);
-});
+router.get("/", jobsController.show);
+
+router.get("/:id", jobsController.index);
+
+router.put("/:id", jobsController.update);
+
+router.delete("/:id", jobsController.destroy);
 
 module.exports = router;

@@ -2,7 +2,7 @@ const connection = require("./db-config");
 const express = require("express");
 import { Request, Response, Application } from "express";
 const app: Application = express();
-const port = process.env.PORT || 8002;
+const port = process.env.PORT || 8000;
 const cors = require("cors");
 import { UserModel } from "./models/user.model";
 import { services } from "./services";
