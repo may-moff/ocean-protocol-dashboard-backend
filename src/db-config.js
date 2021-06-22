@@ -1,5 +1,5 @@
 // const mongoose = require('mongoose');
-require('dotenv').config();
+require("dotenv").config();
 
 // const connection = async () => {
 //   try {
@@ -17,9 +17,9 @@ require('dotenv').config();
 
 // module.exports = connection;
 
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 // const dbPath = "mongodb://<dbuser>:<dbpassword>@ds250607.mlab.com:38485/test-db";
-const dbPath = process.env.DB_URL;
+const dbPath = process.env.DB_STR;
 const connection = () => {
   mongoose.connect(dbPath, {
     useNewUrlParser: true,
@@ -28,11 +28,11 @@ const connection = () => {
     useFindAndModify: false,
   });
   const db = mongoose.connection;
-  db.on('error', () => {
-    console.log('> error occurred from the database');
+  db.on("error", () => {
+    console.log("> error occurred from the database");
   });
-  db.once('open', () => {
-    console.log('> successfully opened the database');
+  db.once("open", () => {
+    console.log("> successfully opened the database");
   });
 };
 module.exports = connection;
