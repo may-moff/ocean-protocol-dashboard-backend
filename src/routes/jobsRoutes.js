@@ -16,9 +16,9 @@ const fakeData = [
 
 router.post("/", jobsController.create);
 
-router.get("/", jobsController.show);
-
 router.get("/:id", jobsController.index);
+
+router.get("/", jobsController.show);
 
 router.put("/:id", jobsController.update);
 
