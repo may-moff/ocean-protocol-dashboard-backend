@@ -1,14 +1,13 @@
-import { recoverPersonalSignature } from 'eth-sig-util';
+// import { recoverPersonalSignature } from 'eth-sig-util';
+const { recoverPersonalSignature } = require('eth-sig-util');
 const ethereumjsUtil = require('ethereumjs-util');
 const { bufferToHex } = ethereumjsUtil;
+const jwt = require('jsonwebtoken');
 import { NextFunction, Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
-const crypto = require('crypto');
+const config = require('../config');
+import { UserModel, IUser } from '../models/user-model';
 
-import { config } from '../../config';
-import { UserModel, IUser } from '../../models/user.model';
-
-export const create = (req: Request, res: Response, next: NextFunction) => {
+module.exports.create = (req: Request, res: Response, next: NextFunction) => {
   const { signature, publicAddress } = req.body;
   if (!signature || !publicAddress)
     return res
@@ -74,7 +73,7 @@ export const create = (req: Request, res: Response, next: NextFunction) => {
           );
         }
 
-        user.nonce = crypto.randomInt(10000, 100000000);
+        user.nonce = Math.floor(Math.random() * 10000);
         return user.save();
       })
       ////////////////////////////////////////////////////
@@ -94,7 +93,7 @@ export const create = (req: Request, res: Response, next: NextFunction) => {
             {
               algorithm: config.algorithms[0],
             },
-            (err, token) => {
+            (err: any, token: string | PromiseLike<string>) => {
               if (err) {
                 return reject(err);
               }

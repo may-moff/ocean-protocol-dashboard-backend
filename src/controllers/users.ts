@@ -1,7 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
-import { UserModel, IUser } from '../../models/user.model';
+import { UserModel, IUser } from '../models/user-model';
 
-export const find = async (req: Request, res: Response, next: NextFunction) => {
+module.exports.find = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   // If a query string ?publicAddress=... is given, then filter results
   const address: any =
     req.query && req.query.publicAddress
@@ -17,7 +21,7 @@ export const find = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export const create = async (
+module.exports.create = async (
   req: Request,
   res: Response,
   next: NextFunction
@@ -26,7 +30,6 @@ export const create = async (
   try {
     const newUser = new UserModel({ publicAddress });
     await newUser.save();
-    console.log(newUser);
     res.json(newUser);
   } catch (error) {
     console.log(error);
@@ -34,7 +37,7 @@ export const create = async (
   }
 };
 
-export const get = (req: Request, res: Response, next: NextFunction) => {
+module.exports.get = (req: Request, res: Response, next: NextFunction) => {
   // AccessToken payload is in req.user.payload, especially its `id` field
   // UserId is the param in /users/:userId
   // We only allow user accessing herself, i.e. require payload.id==userId
@@ -46,7 +49,7 @@ export const get = (req: Request, res: Response, next: NextFunction) => {
     .catch(next);
 };
 
-export const patch = (req: Request, res: Response, next: NextFunction) => {
+module.exports.patch = (req: Request, res: Response, next: NextFunction) => {
   // Only allow to fetch current user
   if ((req as any).user.payload.id !== +req.params.userId) {
     return res.status(401).send({ error: 'You can can only access yourself' });
