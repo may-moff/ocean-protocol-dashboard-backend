@@ -1,4 +1,3 @@
-const crypto = require('crypto');
 import { Schema, model } from 'mongoose';
 
 export interface IUser {
@@ -12,7 +11,7 @@ export interface IUser {
 const userSchema = new Schema<IUser>({
   nonce: {
     type: Number,
-    default: () => crypto.randomInt(10000, 100000000),
+    default: () => Math.floor(Math.random() * 10000),
     required: true,
   },
   publicAddress: { type: String, unique: true, required: true },

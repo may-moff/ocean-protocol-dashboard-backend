@@ -4,8 +4,8 @@ import { Request, Response, Application } from 'express';
 const app: Application = express();
 const port = process.env.PORT || 8000;
 const cors = require('cors');
-import { UserModel } from './models/user.model';
-import { services } from './services';
+import { UserModel } from './models/user-model';
+const routes = require('./routes');
 
 app.use(cors());
 app.use(express.json());
@@ -15,7 +15,7 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 // Mount REST on /api
-app.use('/api', services);
+app.use('/api', routes);
 
 app.post('/test', async (req: Request, res: Response) => {
   const { publicAddress } = req.body;

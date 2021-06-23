@@ -1,11 +1,7 @@
 require('dotenv').config();
-
 const mongoose = require('mongoose');
-
-// path to use local mondodb instance
 const dbPath = process.env.DB_URL;
-// path to use Atlas cluster
-// const dbPath = process.env.DB_STR;
+
 const connection = () => {
   mongoose.connect(dbPath, {
     useNewUrlParser: true,
@@ -15,10 +11,12 @@ const connection = () => {
   });
   const db = mongoose.connection;
   db.on('error', () => {
-    console.log('> error occurred from the database');
+    console.log(
+      '> My dear Maya, it looks like there is a problem with the db, Luca will be available for you 24/7 to help you fix this'
+    );
   });
   db.once('open', () => {
-    console.log('> successfully opened the database');
+    console.log('> My dear Maya, the db is ready for you');
   });
 };
 module.exports = connection;
