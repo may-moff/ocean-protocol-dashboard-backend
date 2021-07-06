@@ -24,3 +24,13 @@ module.exports.show = async (req: Request, res: Response) => {
     res.status(400).send({ message: "cant get the algo", error });
   }
 };
+
+module.exports.index = async (req: Request, res: Response) => {
+  try {
+    console.log("hello");
+    const algorithms = await AlgorithmModel.find();
+    res.status(200).json(algorithms);
+  } catch (error) {
+    res.status(400).send({ message: "cant get index", error });
+  }
+};

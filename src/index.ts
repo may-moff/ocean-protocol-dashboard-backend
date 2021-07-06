@@ -29,16 +29,16 @@ app.post("/test", async (req: Request, res: Response) => {
   }
 });
 
-app.post("/test2", async (req: Request, res: Response) => {
-  const { name } = req.body;
-  try {
-    const algorithm = new AlgorithmModel({ name });
-    await algorithm.save();
-    res.send("algorithm saved succesfully");
-  } catch (error) {
-    console.log(error);
-  }
-});
+// app.post("/test2", async (req: Request, res: Response) => {
+//   const { name } = req.body;
+//   try {
+//     const newAlgorithm = new AlgorithmModel({ name });
+//     await newAlgorithm.save();
+//     res.send("algorithm saved succesfully");
+//   } catch (error) {
+//     console.log(error);
+//   }
+// });
 
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
