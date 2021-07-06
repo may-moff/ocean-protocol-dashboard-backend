@@ -19,5 +19,3 @@ const userSchema = new Schema<IUser>({
 });
 
 export const UserModel = model<IUser>("User", userSchema);
-
-// location_id: { type: [Mongoose.Schema.Types.ObjectId], ref: 'locations' }

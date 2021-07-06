@@ -1,5 +1,5 @@
-import { NextFunction, Request, Response } from 'express';
-import { UserModel, IUser } from '../models/user-model';
+import { NextFunction, Request, Response } from "express";
+import { UserModel, IUser } from "../models/UserModel";
 
 module.exports.find = async (
   req: Request,
@@ -42,7 +42,7 @@ module.exports.get = (req: Request, res: Response, next: NextFunction) => {
   // UserId is the param in /users/:userId
   // We only allow user accessing herself, i.e. require payload.id==userId
   if ((req as any).user.payload.id !== +req.params.userId) {
-    return res.status(401).send({ error: 'You can can only access yourself' });
+    return res.status(401).send({ error: "You can can only access yourself" });
   }
   return UserModel.findById(req.params.userId)
     .then((user: IUser | null) => res.json(user))
@@ -52,7 +52,7 @@ module.exports.get = (req: Request, res: Response, next: NextFunction) => {
 module.exports.patch = (req: Request, res: Response, next: NextFunction) => {
   // Only allow to fetch current user
   if ((req as any).user.payload.id !== +req.params.userId) {
-    return res.status(401).send({ error: 'You can can only access yourself' });
+    return res.status(401).send({ error: "You can can only access yourself" });
   }
   return UserModel.findById(req.params.userId)
     .then((user: IUser | null) => {

@@ -1,18 +1,18 @@
 // import { recoverPersonalSignature } from 'eth-sig-util';
-const { recoverPersonalSignature } = require('eth-sig-util');
-const ethereumjsUtil = require('ethereumjs-util');
+const { recoverPersonalSignature } = require("eth-sig-util");
+const ethereumjsUtil = require("ethereumjs-util");
 const { bufferToHex } = ethereumjsUtil;
-const jwt = require('jsonwebtoken');
-import { NextFunction, Request, Response } from 'express';
-const config = require('../config');
-import { UserModel, IUser } from '../models/user-model';
+const jwt = require("jsonwebtoken");
+import { NextFunction, Request, Response } from "express";
+const config = require("../config");
+import { UserModel, IUser } from "../models/UserModel";
 
 module.exports.create = (req: Request, res: Response, next: NextFunction) => {
   const { signature, publicAddress } = req.body;
   if (!signature || !publicAddress)
     return res
       .status(400)
-      .send({ error: 'Request should have signature and publicAddress' });
+      .send({ error: "Request should have signature and publicAddress" });
 
   return (
     UserModel.findOne({ publicAddress })
@@ -43,7 +43,7 @@ module.exports.create = (req: Request, res: Response, next: NextFunction) => {
 
         // We now are in possession of msg, publicAddress and signature. We
         // will use a helper from eth-sig-util to extract the address from the signature
-        const msgBufferHex = bufferToHex(Buffer.from(msg, 'utf8'));
+        const msgBufferHex = bufferToHex(Buffer.from(msg, "utf8"));
         const address = recoverPersonalSignature({
           data: msgBufferHex,
           sig: signature,
@@ -55,7 +55,7 @@ module.exports.create = (req: Request, res: Response, next: NextFunction) => {
           return user;
         } else {
           res.status(401).send({
-            error: 'Signature verification failed',
+            error: "Signature verification failed",
           });
 
           return null;
@@ -98,7 +98,7 @@ module.exports.create = (req: Request, res: Response, next: NextFunction) => {
                 return reject(err);
               }
               if (!token) {
-                return new Error('Empty token');
+                return new Error("Empty token");
               }
               return resolve(token);
             }
