@@ -1,4 +1,5 @@
 const fs = require('fs');
+const moment = require('moment');
 const filePath = '/Users/Mac/Desktop/algorithm.log';
 
 const userKeys = [
@@ -10,6 +11,7 @@ const userKeys = [
   'Version',
   'Memory',
   'Size',
+  'Found directory at',
 ];
 
 const splitDataToArr = (filePath) => {
@@ -92,14 +94,23 @@ const basicKeyValueSplit = (arr, divider, whitelist) => {
         // remove all symbols except the whitelisted
         .replace(specialCharRegEx, '')
         // remove all extra spaces
-        .replace(/^\s+|\s+$/g, '');
+        .replace(/^\s+|\s+$/g, '')
+        // TEMPORARY SOLUTION TO DEAL WITH '# OF' IN THE LOG FILE
+        .replace('# of', 'number of')
+        .replace(/\s+/g, '_')
+        .toLocaleUpperCase();
 
       const value = keyValue[1].replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/gm, '');
       if (value === '') {
         continue;
       }
-      output[key] = value;
-      continue;
+      if (!isNaN(value)) {
+        output[key] = +value;
+        continue;
+      } else {
+        output[key] = value;
+        continue;
+      }
     }
 
     if (arr[i].replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/gm, '') !== '') {
@@ -118,51 +129,10 @@ const parseFunction = (filePath, divider, whitelist = '') => {
   const keyValueObject = basicKeyValueSplit(splittedData, divider, whitelist);
   return keyValueObject;
 };
-console.log(parseFunction(filePath, ':', '#'));
+// console.log(parseFunction(filePath, ':', '#'));
 
-const jobOneParsedLog = {
-  _id: 'sdkjfhakdfhfklajsdh',
-  algoID: '234234',
-  datasetID: '83268a7d6fa',
-  valuesArr: [
-    {
-      _id: 'dkfnjaslkdfjlakdfj',
-      key: 'file',
-      value: '/data/inputs/473C473b11d808D2Dbc32B42DC8281d25181242d/0',
-      type: 'file path',
-      visualize: true,
-    },
-    {
-      _id: 'dkfnjaslkdf231j',
-      key: '10',
-      value: 'Results will be written in results.txt',
-      type: 'file path',
-      visualize: true,
-    },
-  ],
-};
-
-const userInputs = ['File', 'Size'];
-
-const user = {
-  _id: 'dsafjhakjfhkjahdf',
-  pubblic_address: '39847109adf',
-  nonce: 1231312,
-  jobs: [{ _id: 'sdkjfhakdfhfklajsdh' }],
-};
-
-const NUMBER = 'number';
-const DATE = 'date';
-
-const results = {
-  'end time': '12312312',
-  'start time': 'dfadsfas',
-};
-
-const parseKeys = [
-  {
-    key: 'end time',
-    type: 'time',
-    visualize: true,
-  },
-];
+const test = parseFunction(filePath, ':', '#');
+test.CIAO_CIAO = moment(test.START_DATE);
+// console.log(moment(test.START_DATE) ? 'okey' : 'nope');
+// console.log(moment(test.END_DATE));
+console.log(test);
