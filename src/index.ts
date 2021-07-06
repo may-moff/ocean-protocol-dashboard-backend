@@ -5,6 +5,7 @@ const app: Application = express();
 const port = process.env.PORT || 8000;
 const cors = require("cors");
 import { UserModel } from "./models/UserModel";
+import { AlgorithmModel } from "./models/AlgorithmModel";
 const routes = require("./routes");
 
 app.use(cors());
@@ -23,6 +24,17 @@ app.post("/test", async (req: Request, res: Response) => {
     const newUser = new UserModel({ publicAddress });
     await newUser.save();
     res.send("User saved");
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+app.post("/test2", async (req: Request, res: Response) => {
+  const { name } = req.body;
+  try {
+    const algorithm = new AlgorithmModel({ name });
+    await algorithm.save();
+    res.send("algorithm saved succesfully");
   } catch (error) {
     console.log(error);
   }
