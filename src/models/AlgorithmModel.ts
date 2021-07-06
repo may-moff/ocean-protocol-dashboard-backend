@@ -9,6 +9,11 @@ export interface IAlgorithm {
   save(): any;
 }
 
-const algorithmSchema = new Schema<IAlgorithm>({});
+const algorithmSchema = new Schema<IAlgorithm>({
+  name: {
+    type: String,
+    required: true,
+  },
+});
 
 export const AlgorithmModel = model<IAlgorithm>("Algorithm", algorithmSchema);
