@@ -1,4 +1,4 @@
-import { Schema, model, Mongoose, ObjectId } from "mongoose";
+import { Schema, model, ObjectId } from "mongoose";
 
 export interface IJob {
   _id: string;
