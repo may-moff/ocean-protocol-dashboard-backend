@@ -4,7 +4,6 @@ export interface IUser {
   _id: string;
   nonce: number;
   publicAddress: string;
-  // get back on this to verify how to make it work better
   save(): any;
 }
 
