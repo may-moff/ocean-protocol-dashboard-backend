@@ -5,8 +5,8 @@ import { AlgorithmModel, IAlgorithm } from "../models/AlgorithmModel";
 // get
 
 module.exports.create = async (req: Request, res: Response) => {
+  const { name } = req.body;
   try {
-    const { name } = req.body;
     const algorithm = new AlgorithmModel({ name });
     await algorithm.save();
     res.status(200).json(algorithm);
@@ -16,8 +16,8 @@ module.exports.create = async (req: Request, res: Response) => {
 };
 
 module.exports.show = async (req: Request, res: Response) => {
+  const { name } = req.body;
   try {
-    const { name } = req.body;
     const algorithm = await AlgorithmModel.findOne({ name });
     res.status(200).json(algorithm);
   } catch (error) {
