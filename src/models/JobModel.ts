@@ -23,12 +23,14 @@ const jobSchema = new Schema<IJob>({
     default: () => Math.floor(Math.random() * 100),
     required: true,
   },
+  // correct way of referencing user_id?
   user_id: {
-    type: Mongoose.Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId,
     ref: "User",
   },
+  // does it work like this to get an array of strings??
   result: {
-    type: String,
+    type: [String],
   },
 });
 
