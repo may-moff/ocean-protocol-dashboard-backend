@@ -1,5 +1,5 @@
 const fs = require('fs');
-const moment = require('moment');
+const dayjs = require('dayjs');
 const filePath = '/Users/Mac/Desktop/algorithm.log';
 
 const userKeys = [
@@ -107,6 +107,10 @@ const basicKeyValueSplit = (arr, divider, whitelist) => {
       if (!isNaN(value)) {
         output[key] = +value;
         continue;
+      }
+      if (dayjs(value).isValid()) {
+        output[key] = dayjs(value)['$d'];
+        continue;
       } else {
         output[key] = value;
         continue;
@@ -132,7 +136,4 @@ const parseFunction = (filePath, divider, whitelist = '') => {
 // console.log(parseFunction(filePath, ':', '#'));
 
 const test = parseFunction(filePath, ':', '#');
-test.CIAO_CIAO = moment(test.START_DATE);
-// console.log(moment(test.START_DATE) ? 'okey' : 'nope');
-// console.log(moment(test.END_DATE));
 console.log(test);
