@@ -13,7 +13,7 @@ module.exports.find = async (
       : undefined;
 
   try {
-    const users = await UserModel.find();
+    const users = await UserModel.find(address);
     res.json(users);
   } catch (error) {
     console.log(error);
