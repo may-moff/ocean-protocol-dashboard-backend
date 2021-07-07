@@ -5,6 +5,7 @@ const app: Application = express();
 const port = process.env.PORT || 8000;
 const cors = require("cors");
 import { UserModel } from "./models/UserModel";
+import { AlgorithmModel } from "./models/AlgorithmModel";
 const routes = require("./routes");
 
 app.use(cors());
@@ -27,6 +28,17 @@ app.post("/test", async (req: Request, res: Response) => {
     console.log(error);
   }
 });
+
+// app.post("/test2", async (req: Request, res: Response) => {
+//   const { name } = req.body;
+//   try {
+//     const newAlgorithm = new AlgorithmModel({ name });
+//     await newAlgorithm.save();
+//     res.send("algorithm saved succesfully");
+//   } catch (error) {
+//     console.log(error);
+//   }
+// });
 
 app.listen(port, () => {
   console.log(`Server listening at http://localhost:${port}`);
