@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import { Schema, model } from 'mongoose';
 
 export interface IAlgorithm {
   _id: string;
@@ -16,4 +16,4 @@ const algorithmSchema = new Schema<IAlgorithm>({
   },
 });
 
-export const AlgorithmModel = model<IAlgorithm>("Algorithm", algorithmSchema);
+export const AlgorithmModel = model<IAlgorithm>('Algorithm', algorithmSchema);
