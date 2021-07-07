@@ -14,15 +14,15 @@ export interface IRule {
 }
 
 const ruleSchema = new Schema<IRule>({
-  algorithm_id: {
+  algorithmId: {
     type: Schema.Types.ObjectId,
     ref: "Algorithm",
   },
 
-  parse_keys: [
+  parseKeys: [
     {
       key: String,
-      data_type: String,
+      dataType: String,
       visualize: Boolean,
     },
   ],

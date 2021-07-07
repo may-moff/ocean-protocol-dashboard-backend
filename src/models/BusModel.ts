@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 
-export interface IAlgorithm {
+export interface IBus {
   _id: string;
   name: string;
   //   result: array of objects
@@ -9,11 +9,11 @@ export interface IAlgorithm {
   save(): any;
 }
 
-const algorithmSchema = new Schema<IAlgorithm>({
+const busSchema = new Schema<IBus>({
   name: {
     type: String,
     required: true,
   },
 });
 
-export const AlgorithmModel = model<IAlgorithm>("Algorithm", algorithmSchema);
+export const BusModel = model<IBus>("Bus", busSchema);

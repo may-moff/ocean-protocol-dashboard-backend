@@ -12,17 +12,17 @@ export interface IJob {
 }
 
 const jobSchema = new Schema<IJob>({
-  algorithm_id: {
+  algorithmId: {
     type: Schema.Types.ObjectId,
     ref: "Algorithm",
   },
-  data_id: {
+  dataId: {
     type: Number,
     default: () => Math.floor(Math.random() * 100),
     required: true,
   },
 
-  user_id: {
+  userId: {
     type: Schema.Types.ObjectId,
     ref: "User",
   },

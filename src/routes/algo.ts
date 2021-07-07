@@ -8,4 +8,4 @@ export const algoRouter = express.Router();
 // algoRouter.post('/', controller.create);
 algoRouter.post("/", controller.create);
 algoRouter.get("/", controller.show);
-algoRouter.get("/", controller.index);
+algoRouter.get("/index", controller.index);
