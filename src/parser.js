@@ -19,26 +19,36 @@ const splitDataToArr = (filePath) => {
   const textByLine = inputFile.split('\n');
   return textByLine;
 };
-const addCPU = (arr, divider) => {
+const addCPU = (arr, separator) => {
   const cpuMakers = ['intel', 'amd'];
   for (let i = 0; i < arr.length; i++) {
-    if (arr[i].includes(divider)) {
+    if (arr[i].includes(separator)) {
       continue;
     }
     for (let j = 0; j < cpuMakers.length; j++) {
       if (arr[i].toLocaleLowerCase().includes(cpuMakers[j])) {
-        return `CPU${divider} ${arr[i]}`;
+        return `CPU${separator} ${arr[i]}`;
       }
     }
   }
   return;
 };
 
-const addUserKeyValue = (arr, userKeys, divider) => {
+const findDataType = (value) => {
+  if (typeof value === 'number') {
+    return 'number';
+  }
+  if (dayjs(value).isValid()) {
+    return 'timestamp';
+  }
+  return 'string';
+};
+
+const addUserKeyValue = (arr, userKeys, separator) => {
   const output = [];
   for (let i = 0; i < arr.length; i++) {
     for (let j = 0; j < userKeys.length; j++) {
-      if (arr[i].toLocaleLowerCase().includes(`${userKeys[j]}${divider}`)) {
+      if (arr[i].toLocaleLowerCase().includes(`${userKeys[j]}${separator}`)) {
         continue;
       }
       if (
@@ -46,7 +56,7 @@ const addUserKeyValue = (arr, userKeys, divider) => {
       ) {
         const newKeyValue = arr[i].replace(
           userKeys[j],
-          `${userKeys[j]}${divider}`
+          `${userKeys[j]}${separator}`
         );
         output.push(newKeyValue);
       }
@@ -55,15 +65,15 @@ const addUserKeyValue = (arr, userKeys, divider) => {
   return output;
 };
 
-const basicKeyValueSplit = (arr, divider, whitelist) => {
+const basicKeyValueSplit = (arr, separator, whitelist) => {
   const input = [...arr];
   // Adding custom line to input array for cpu maker
-  const CPU = addCPU(input, divider);
+  const CPU = addCPU(input, separator);
   if (CPU) {
     input.push(CPU);
   }
   // Adding custom lines to input array for user selected keys
-  const userKeyValues = addUserKeyValue(input, userKeys, divider);
+  const userKeyValues = addUserKeyValue(input, userKeys, separator);
   if (userKeyValues.length > 0) {
     userKeyValues.forEach((value) => input.push(value));
   }
@@ -82,13 +92,13 @@ const basicKeyValueSplit = (arr, divider, whitelist) => {
     'g'
   );
   for (let i = 0; i < input.length; i++) {
-    if (input[i].includes(divider)) {
-      const result = input[i].split(divider);
+    if (input[i].includes(separator)) {
+      const result = input[i].split(separator);
       // splice only in 1 substring and then join back the second part of the
       // value to avoid splitting multiple time in the same line if the
-      // divider is present again before line break
+      // separator is present again before line break
       const keyValue = result.splice(0, 1);
-      keyValue.push(result.join(divider));
+      keyValue.push(result.join(separator));
 
       const key = keyValue[0]
         // remove all symbols except the whitelisted
@@ -128,12 +138,32 @@ const basicKeyValueSplit = (arr, divider, whitelist) => {
   return output;
 };
 
-const parseFunction = (filePath, divider, whitelist = '') => {
+const createRules = (parsedObj) => {
+  const output = [];
+  Object.keys(parsedObj).forEach((key) => {
+    const rule = { key, dataType: 'string', visualize: true };
+    if (key.startsWith('DEFAULT_')) {
+      rule.visualize = false;
+    }
+    rule.dataType = findDataType(parsedObj[key]);
+    output.push(rule);
+  });
+  return output;
+};
+
+const parseFunction = (filePath, separator, whitelist = '') => {
   const splittedData = splitDataToArr(filePath);
-  const keyValueObject = basicKeyValueSplit(splittedData, divider, whitelist);
-  return keyValueObject;
+  const keyValueObject = basicKeyValueSplit(splittedData, separator, whitelist);
+  const parseKeys = createRules(keyValueObject);
+  return { results: keyValueObject, parseKeys };
 };
 // console.log(parseFunction(filePath, ':', '#'));
 
 const test = parseFunction(filePath, ':', '#');
 console.log(test);
+
+const parseKeys = {
+  key: '',
+  dataType: '',
+  visualize: true,
+};
