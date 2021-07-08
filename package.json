@@ -5,7 +5,7 @@
   "main": "lib",
   "scripts": {
     "dev": "ts-node-dev src/index.ts",
-    "start": "npm start",
+    "start": "npm run dev",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
