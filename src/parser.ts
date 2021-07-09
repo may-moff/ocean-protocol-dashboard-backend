@@ -2,6 +2,16 @@ const fs = require('fs');
 const dayjs = require('dayjs');
 const filePath = '/Users/Mac/Desktop/algorithm.log';
 
+interface Results {
+  [x: string]: string | number;
+}
+
+interface Rule {
+  key: string;
+  dataType: string;
+  visualize: boolean;
+}
+
 const userKeys = [
   'Start Time',
   'End Time',
@@ -14,12 +24,12 @@ const userKeys = [
   'Found directory at',
 ];
 
-const splitDataToArr = (filePath) => {
+const splitDataToArr = (filePath: string) => {
   const inputFile = fs.readFileSync(filePath, 'utf-8');
   const textByLine = inputFile.split('\n');
   return textByLine;
 };
-const addCPU = (arr, separator) => {
+const addCPU = (arr: string[], separator: string) => {
   const cpuMakers = ['intel', 'amd'];
   for (let i = 0; i < arr.length; i++) {
     if (arr[i].includes(separator)) {
@@ -34,7 +44,7 @@ const addCPU = (arr, separator) => {
   return;
 };
 
-const findDataType = (value) => {
+const findDataType = (value: string | number) => {
   if (typeof value === 'number') {
     return 'number';
   }
@@ -44,7 +54,11 @@ const findDataType = (value) => {
   return 'string';
 };
 
-const addUserKeyValue = (arr, userKeys, separator) => {
+const addUserKeyValue = (
+  arr: string[],
+  userKeys: string[],
+  separator: string
+) => {
   const output = [];
   for (let i = 0; i < arr.length; i++) {
     for (let j = 0; j < userKeys.length; j++) {
@@ -65,7 +79,11 @@ const addUserKeyValue = (arr, userKeys, separator) => {
   return output;
 };
 
-const basicKeyValueSplit = (arr, separator, whitelist) => {
+const basicKeyValueSplit = (
+  arr: string[],
+  separator: string,
+  whitelist: string
+) => {
   const input = [...arr];
   // Adding custom line to input array for cpu maker
   const CPU = addCPU(input, separator);
@@ -77,9 +95,9 @@ const basicKeyValueSplit = (arr, separator, whitelist) => {
   if (userKeyValues.length > 0) {
     userKeyValues.forEach((value) => input.push(value));
   }
-  const output = {};
+  const output: Results = {};
   const specialCharRegExList = `[&\/\\,+()$~%.#'":*?<>{}\-]`;
-  const getSpecialCharRegEx = (string, whitelist) => {
+  const getSpecialCharRegEx = (string: string, whitelist: string) => {
     const whitelistArr = whitelist.split('');
     let output = string;
     for (let i = 0; i < whitelistArr.length; i++) {
@@ -110,11 +128,14 @@ const basicKeyValueSplit = (arr, separator, whitelist) => {
         .replace(/\s+/g, '_')
         .toLocaleUpperCase();
 
-      const value = keyValue[1].replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/gm, '');
+      const value: string = keyValue[1].replace(
+        /^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/gm,
+        ''
+      );
       if (value === '') {
         continue;
       }
-      if (!isNaN(value)) {
+      if (typeof value === 'string' && !Number.isNaN(Number(value))) {
         output[key] = +value;
         continue;
       }
@@ -138,10 +159,10 @@ const basicKeyValueSplit = (arr, separator, whitelist) => {
   return output;
 };
 
-const createRules = (parsedObj) => {
-  const output = [];
+const createRules = (parsedObj: Results) => {
+  const output: Rule[] = [];
   Object.keys(parsedObj).forEach((key) => {
-    const rule = { key, dataType: 'string', visualize: true };
+    const rule: Rule = { key, dataType: 'string', visualize: true };
     if (key.startsWith('DEFAULT_')) {
       rule.visualize = false;
     }
@@ -151,7 +172,11 @@ const createRules = (parsedObj) => {
   return output;
 };
 
-const parseFunction = (filePath, separator, whitelist = '') => {
+const parseFunction = (
+  filePath: string,
+  separator: string,
+  whitelist: string = ''
+) => {
   const splittedData = splitDataToArr(filePath);
   const keyValueObject = basicKeyValueSplit(splittedData, separator, whitelist);
   const parseKeys = createRules(keyValueObject);
