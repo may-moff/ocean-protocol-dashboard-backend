@@ -16,9 +16,7 @@ module.exports.create = (req: Request, res: Response, next: NextFunction) => {
 
   return (
     UserModel.findOne({ publicAddress })
-      ////////////////////////////////////////////////////
-      // Step 1: Get the user with the given publicAddress
-      ////////////////////////////////////////////////////
+      // Get the user with the given publicAddress
       .then((user) => {
         if (!user) {
           res.status(401).send({
@@ -30,9 +28,7 @@ module.exports.create = (req: Request, res: Response, next: NextFunction) => {
 
         return user;
       })
-      ////////////////////////////////////////////////////
-      // Step 2: Verify digital signature
-      ////////////////////////////////////////////////////
+      // Verify digital signature
       .then((user) => {
         if (!(user instanceof UserModel)) {
           // Should not happen, we should have already sent the response
@@ -61,9 +57,7 @@ module.exports.create = (req: Request, res: Response, next: NextFunction) => {
           return null;
         }
       })
-      ////////////////////////////////////////////////////
-      // Step 3: Generate a new nonce for the user
-      ////////////////////////////////////////////////////
+      // Generate a new nonce for the user
       .then((user: IUser | null) => {
         if (!(user instanceof UserModel)) {
           // Should not happen, we should have already sent the response
@@ -76,12 +70,9 @@ module.exports.create = (req: Request, res: Response, next: NextFunction) => {
         user.nonce = Math.floor(Math.random() * 10000);
         return user.save();
       })
-      ////////////////////////////////////////////////////
-      // Step 4: Create JWT
-      ////////////////////////////////////////////////////
+      // Create JWT
       .then((user: IUser) => {
         return new Promise<string>((resolve, reject) =>
-          // https://github.com/auth0/node-jsonwebtoken
           jwt.sign(
             {
               payload: {
