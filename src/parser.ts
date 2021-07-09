@@ -1,6 +1,6 @@
 const fs = require('fs');
 const dayjs = require('dayjs');
-const filePath = '/Users/Mac/Desktop/algorithm.log';
+const filePath = 'public/algorithm.log';
 
 interface Results {
   [x: string]: string | number;
