@@ -143,10 +143,11 @@ var parseFunction = function (filePath, separator, whitelist) {
     return { results: keyValueObject, parseKeys: parseKeys };
 };
 // console.log(parseFunction(filePath, ':', '#'));
-var test = parseFunction(filePath, ':', '#');
-console.log(test);
+// const test = parseFunction(filePath, ':', '#');
+// console.log(test);
 var parseKeys = {
     key: '',
     dataType: '',
     visualize: true
 };
+module.exports = parseFunction;

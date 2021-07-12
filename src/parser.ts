@@ -184,11 +184,13 @@ const parseFunction = (
 };
 // console.log(parseFunction(filePath, ':', '#'));
 
-const test = parseFunction(filePath, ':', '#');
-console.log(test);
+// const test = parseFunction(filePath, ':', '#');
+// console.log(test);
 
 const parseKeys = {
   key: '',
   dataType: '',
   visualize: true,
 };
+
+module.exports = parseFunction;
