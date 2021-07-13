@@ -29,16 +29,14 @@ module.exports.create = async (req: Request, res: Response) => {
     const update = { parseKeys: output.parseKeys };
     await AlgorithmModel.findOneAndUpdate(filter, update);
 
-    res
-      .status(200)
-      .json({
-        result: output.result,
-        parseKeys: output.parseKeys,
-        algorithmId,
-        userId,
-        dataId,
-        filePath,
-      });
+    res.status(200).json({
+      result: output.result,
+      parseKeys: output.parseKeys,
+      algorithmId,
+      userId,
+      dataId,
+      filePath: uploadLocation,
+    });
   } catch (error) {
     if (error === 'file not available')
       res.status(400).send({ message: "Can't access file", error });
