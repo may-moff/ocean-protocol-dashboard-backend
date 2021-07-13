@@ -31,7 +31,7 @@ const jobSchema = new Schema<IJob>({
   filePath: {
     type: String,
   },
-
+  // make this object
   result: {
     type: [Schema.Types.Mixed],
   },
