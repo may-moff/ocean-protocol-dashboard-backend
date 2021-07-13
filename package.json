@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/multer": "^1.4.7",
     "dayjs": "^1.10.6",
     "eth-sig-util": "^3.0.1",
     "ethereumjs-util": "^5.2.1",

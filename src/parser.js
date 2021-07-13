@@ -3,27 +3,27 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from) {
         to[j] = from[i];
     return to;
 };
-var fs = require('fs');
-var dayjs = require('dayjs');
-var filePath = 'public/algorithm.log';
+var fs = require("fs");
+var dayjs = require("dayjs");
+var filePath = "public/algorithm.log";
 var userKeys = [
-    'Start Time',
-    'End Time',
-    'Start counting lines for',
-    'Name',
-    'Type',
-    'Version',
-    'Memory',
-    'Size',
-    'Found directory at',
+    "Start Time",
+    "End Time",
+    "Start counting lines for",
+    "Name",
+    "Type",
+    "Version",
+    "Memory",
+    "Size",
+    "Found directory at",
 ];
 var splitDataToArr = function (filePath) {
-    var inputFile = fs.readFileSync(filePath, 'utf-8');
-    var textByLine = inputFile.split('\n');
+    var inputFile = fs.readFileSync(filePath, "utf-8");
+    var textByLine = inputFile.split("\n");
     return textByLine;
 };
 var addCPU = function (arr, separator) {
-    var cpuMakers = ['intel', 'amd'];
+    var cpuMakers = ["intel", "amd"];
     for (var i = 0; i < arr.length; i++) {
         if (arr[i].includes(separator)) {
             continue;
@@ -37,13 +37,13 @@ var addCPU = function (arr, separator) {
     return;
 };
 var findDataType = function (value) {
-    if (typeof value === 'number') {
-        return 'number';
+    if (typeof value === "number") {
+        return "number";
     }
     if (dayjs(value).isValid()) {
-        return 'timestamp';
+        return "timestamp";
     }
-    return 'string';
+    return "string";
 };
 var addUserKeyValue = function (arr, userKeys, separator) {
     var output = [];
@@ -75,14 +75,14 @@ var basicKeyValueSplit = function (arr, separator, whitelist) {
     var output = {};
     var specialCharRegExList = "[&/\\,+()$~%.#'\":*?<>{}-]";
     var getSpecialCharRegEx = function (string, whitelist) {
-        var whitelistArr = whitelist.split('');
+        var whitelistArr = whitelist.split("");
         var output = string;
         for (var i = 0; i < whitelistArr.length; i++) {
-            output = output.replace(whitelistArr[i], '');
+            output = output.replace(whitelistArr[i], "");
         }
         return output;
     };
-    var specialCharRegEx = new RegExp(getSpecialCharRegEx(specialCharRegExList, whitelist), 'g');
+    var specialCharRegEx = new RegExp(getSpecialCharRegEx(specialCharRegExList, whitelist), "g");
     for (var i = 0; i < input.length; i++) {
         if (input[i].includes(separator)) {
             var result = input[i].split(separator);
@@ -93,23 +93,23 @@ var basicKeyValueSplit = function (arr, separator, whitelist) {
             keyValue.push(result.join(separator));
             var key = keyValue[0]
                 // remove all symbols except the whitelisted
-                .replace(specialCharRegEx, '')
+                .replace(specialCharRegEx, "")
                 // remove all extra spaces
-                .replace(/^\s+|\s+$/g, '')
+                .replace(/^\s+|\s+$/g, "")
                 // TEMPORARY SOLUTION TO DEAL WITH '# OF' IN THE LOG FILE
-                .replace('# of', 'number of')
-                .replace(/\s+/g, '_')
+                .replace("# of", "number of")
+                .replace(/\s+/g, "_")
                 .toLocaleUpperCase();
-            var value = keyValue[1].replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/gm, '');
-            if (value === '') {
+            var value = keyValue[1].replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/gm, "");
+            if (value === "") {
                 continue;
             }
-            if (typeof value === 'string' && !Number.isNaN(Number(value))) {
+            if (typeof value === "string" && !Number.isNaN(Number(value))) {
                 output[key] = +value;
                 continue;
             }
             if (dayjs(value).isValid()) {
-                output[key] = dayjs(value)['$d'];
+                output[key] = dayjs(value)["$d"];
                 continue;
             }
             else {
@@ -117,8 +117,8 @@ var basicKeyValueSplit = function (arr, separator, whitelist) {
                 continue;
             }
         }
-        if (arr[i].replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/gm, '') !== '') {
-            output["DEFAULT_" + i] = arr[i].replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/gm, '');
+        if (arr[i].replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/gm, "") !== "") {
+            output["DEFAULT_" + i] = arr[i].replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/gm, "");
         }
     }
     return output;
@@ -126,8 +126,8 @@ var basicKeyValueSplit = function (arr, separator, whitelist) {
 var createRules = function (parsedObj) {
     var output = [];
     Object.keys(parsedObj).forEach(function (key) {
-        var rule = { key: key, dataType: 'string', visualize: true };
-        if (key.startsWith('DEFAULT_')) {
+        var rule = { key: key, dataType: "string", visualize: true };
+        if (key.startsWith("DEFAULT_")) {
             rule.visualize = false;
         }
         rule.dataType = findDataType(parsedObj[key]);
@@ -136,18 +136,18 @@ var createRules = function (parsedObj) {
     return output;
 };
 var parseFunction = function (filePath, separator, whitelist) {
-    if (whitelist === void 0) { whitelist = ''; }
+    if (whitelist === void 0) { whitelist = ""; }
     var splittedData = splitDataToArr(filePath);
     var keyValueObject = basicKeyValueSplit(splittedData, separator, whitelist);
     var parseKeys = createRules(keyValueObject);
-    return { results: keyValueObject, parseKeys: parseKeys };
+    return { result: keyValueObject, parseKeys: parseKeys };
 };
 // console.log(parseFunction(filePath, ':', '#'));
 // const test = parseFunction(filePath, ':', '#');
 // console.log(test);
 var parseKeys = {
-    key: '',
-    dataType: '',
+    key: "",
+    dataType: "",
     visualize: true
 };
 module.exports = parseFunction;

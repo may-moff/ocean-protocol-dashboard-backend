@@ -1,5 +1,5 @@
 import { algoRouter } from "./algo";
-
+import { jobsRouter } from "./jobs";
 const express = require("express");
 const config = require("../config");
 const controller = require("../controllers/users");
@@ -24,3 +24,4 @@ userRouter.get("/:userId", jwt(config), controller.get);
 userRouter.patch("/:userId", jwt(config), controller.patch);
 
 userRouter.use("/:userId/algo/", algoRouter);
+userRouter.use("/:userId/jobs/", jobsRouter);
