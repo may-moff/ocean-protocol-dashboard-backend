@@ -5,12 +5,13 @@
   "main": "lib",
   "scripts": {
     "dev": "ts-node-dev src/index.ts",
-    "start": "npm run dev",
+    "start": "ts-node src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dayjs": "^1.10.6",
     "eth-sig-util": "^3.0.1",
     "ethereumjs-util": "^5.2.1",
     "express": "^4.17.1",
