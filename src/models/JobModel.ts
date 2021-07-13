@@ -1,9 +1,9 @@
-import { Schema, model, ObjectId } from 'mongoose';
+import { Schema, model, ObjectId } from "mongoose";
 
 export interface IJob {
   _id: string;
   algorithmId: ObjectId;
-  dataId: string;
+  dataName: string;
   userId: ObjectId;
   filePath: string;
   result: { [x: string]: string | number };
@@ -15,9 +15,9 @@ export interface IJob {
 const jobSchema = new Schema<IJob>({
   algorithmId: {
     type: Schema.Types.ObjectId,
-    ref: 'Algorithm',
+    ref: "Algorithm",
   },
-  dataId: {
+  dataName: {
     type: String,
     // default: () => Math.floor(Math.random() * 100),
     required: true,
@@ -25,7 +25,7 @@ const jobSchema = new Schema<IJob>({
 
   userId: {
     type: Schema.Types.ObjectId,
-    ref: 'User',
+    ref: "User",
   },
 
   filePath: {
@@ -37,4 +37,4 @@ const jobSchema = new Schema<IJob>({
   },
 });
 
-export const JobModel = model<IJob>('Job', jobSchema);
+export const JobModel = model<IJob>("Job", jobSchema);
