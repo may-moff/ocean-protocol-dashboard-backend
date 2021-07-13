@@ -2,9 +2,9 @@ import { Schema, model, ObjectId } from "mongoose";
 
 export interface IJob {
   _id: string;
-  algorithm_id: ObjectId;
-  data_id: number;
-  user_id: ObjectId;
+  algorithmId: ObjectId;
+  dataId: number;
+  userId: ObjectId;
   filePath: string;
   result: { [x: string]: string | number };
 
