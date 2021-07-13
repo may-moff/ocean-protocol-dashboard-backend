@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { UserModel, IUser } from '../models/user-model';
+import { UserModel, IUser } from '../models/UserModel';
 
 module.exports.find = async (
   req: Request,
