@@ -5,9 +5,9 @@ import { AlgorithmModel, IAlgorithm } from "../models/AlgorithmModel";
 // get
 
 module.exports.create = async (req: Request, res: Response) => {
-  const { name } = req.body;
+  const { name, parseKeys, rules } = req.body;
   try {
-    const algorithm = new AlgorithmModel({ name });
+    const algorithm = new AlgorithmModel({ name, parseKeys, rules });
     await algorithm.save();
     res.status(200).json(algorithm);
   } catch (error) {
@@ -15,7 +15,7 @@ module.exports.create = async (req: Request, res: Response) => {
   }
 };
 
-module.exports.show = async (req: Request, res: Response) => {
+module.exports.show = async (req: Request, res: Response, data: any) => {
   const { name } = req.body;
   try {
     const algorithm = await AlgorithmModel.findOne({ name });
@@ -31,6 +31,6 @@ module.exports.index = async (req: Request, res: Response) => {
     const algorithms = await AlgorithmModel.find({});
     res.status(200).json(algorithms);
   } catch (error) {
-    res.status(400).send({ message: "cant get index", error });
+    res.status(400).send({ message: "cant get algo index", error });
   }
 };

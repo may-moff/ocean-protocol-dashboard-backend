@@ -5,7 +5,8 @@ export interface IJob {
   algorithm_id: ObjectId;
   data_id: number;
   user_id: ObjectId;
-  result: any;
+  filePath: string;
+  result: { [x: string]: string | number };
 
   // get back on this to verify how to make it work better
   save(): any;
@@ -25,6 +26,10 @@ const jobSchema = new Schema<IJob>({
   userId: {
     type: Schema.Types.ObjectId,
     ref: "User",
+  },
+
+  filePath: {
+    type: String,
   },
 
   result: {
