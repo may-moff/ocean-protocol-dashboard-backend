@@ -45,3 +45,8 @@ module.exports.index = async (req: Request, res: Response) => {
     res.status(400).send({ message: "cant get all algos", error });
   }
 };
+
+module.exports.update = async (req: Request, res: Response) => {
+  const userId: string = req.params.userId;
+  const algorithmId: string = req.params.algoId;
+};

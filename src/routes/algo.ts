@@ -9,3 +9,4 @@ export const algoRouter = express.Router({ mergeParams: true });
 algoRouter.post("/", controller.create);
 algoRouter.get("/", controller.show);
 algoRouter.get("/index", controller.index);
+algoRouter.put("/:algoId", controller.update);
