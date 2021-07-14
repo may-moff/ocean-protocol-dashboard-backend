@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { AlgorithmModel, IAlgorithm } from "../models/AlgorithmModel";
+import { JobModel } from "../models/JobModel";
 import { UserModel } from "../models/UserModel";
 const parseFunction = require("../parser.ts");
 
@@ -54,8 +55,20 @@ module.exports.update = async (req: Request, res: Response) => {
   try {
     const filter = { _id: algorithmId };
     const update = { parseKeys: req.body.parseKeys, rule: req.body.rule };
-    const updatedAlgo = await AlgorithmModel.findOneAndUpdate(filter, update);
-    const output = await parseFunction(req.body.filePath, ":", "#");
+    await AlgorithmModel.findOneAndUpdate(filter, update);
+    const output = await parseFunction(
+      req.body.filePath,
+      ":",
+      "#",
+      req.body.rule
+    );
+    const jobFilter = { _id: req.body._id };
+    const jobUpdate = { result: output.result };
+    await JobModel.findByIdAndUpdate(jobFilter, jobUpdate);
+    res.status(200).json({
+      result: output.result,
+      parseKeys: output.parseKeys,
+    });
   } catch (error) {
     res.status(400).send({ message: "no no no" });
   }
