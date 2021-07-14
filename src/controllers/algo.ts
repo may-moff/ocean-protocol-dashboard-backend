@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { AlgorithmModel, IAlgorithm } from "../models/AlgorithmModel";
 import { UserModel } from "../models/UserModel";
+const parseFunction = require("../parser.ts");
 
 // create
 // get
@@ -49,4 +50,13 @@ module.exports.index = async (req: Request, res: Response) => {
 module.exports.update = async (req: Request, res: Response) => {
   const userId: string = req.params.userId;
   const algorithmId: string = req.params.algoId;
+
+  try {
+    const filter = { _id: algorithmId };
+    const update = { parseKeys: req.body.parseKeys, rule: req.body.rule };
+    const updatedAlgo = await AlgorithmModel.findOneAndUpdate(filter, update);
+    const output = await parseFunction(req.body.filePath, ":", "#");
+  } catch (error) {
+    res.status(400).send({ message: "no no no" });
+  }
 };
