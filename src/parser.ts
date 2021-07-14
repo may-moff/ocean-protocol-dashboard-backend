@@ -12,7 +12,7 @@ interface Rule {
   visualize: boolean;
 }
 
-const userKeys = [
+/* const userKeys = [
   'Start Time',
   'End Time',
   'Start counting lines for',
@@ -22,7 +22,7 @@ const userKeys = [
   'Memory',
   'Size',
   'Found directory at',
-];
+]; */
 
 const splitDataToArr = (filePath: string) => {
   const inputFile = fs.readFileSync(filePath, 'utf-8');
@@ -56,21 +56,21 @@ const findDataType = (value: string | number) => {
 
 const addUserKeyValue = (
   arr: string[],
-  userKeys: string[],
+  userInput: string[],
   separator: string
 ) => {
   const output = [];
   for (let i = 0; i < arr.length; i++) {
-    for (let j = 0; j < userKeys.length; j++) {
-      if (arr[i].toLocaleLowerCase().includes(`${userKeys[j]}${separator}`)) {
+    for (let j = 0; j < userInput.length; j++) {
+      if (arr[i].toLocaleLowerCase().includes(`${userInput[j]}${separator}`)) {
         continue;
       }
       if (
-        arr[i].toLocaleLowerCase().includes(userKeys[j].toLocaleLowerCase())
+        arr[i].toLocaleLowerCase().includes(userInput[j].toLocaleLowerCase())
       ) {
         const newKeyValue = arr[i].replace(
-          userKeys[j],
-          `${userKeys[j]}${separator}`
+          userInput[j],
+          `${userInput[j]}${separator}`
         );
         output.push(newKeyValue);
       }
@@ -82,7 +82,8 @@ const addUserKeyValue = (
 const basicKeyValueSplit = (
   arr: string[],
   separator: string,
-  whitelist: string
+  whitelist: string,
+  userInput: string[]
 ) => {
   const input = [...arr];
   // Adding custom line to input array for cpu maker
@@ -91,7 +92,7 @@ const basicKeyValueSplit = (
     input.push(CPU);
   }
   // Adding custom lines to input array for user selected keys
-  const userKeyValues = addUserKeyValue(input, userKeys, separator);
+  const userKeyValues = addUserKeyValue(input, userInput, separator);
   if (userKeyValues.length > 0) {
     userKeyValues.forEach((value) => input.push(value));
   }
@@ -175,20 +176,28 @@ const createRules = (parsedObj: Results) => {
 const parseFunction = (
   filePath: string,
   separator: string,
-  whitelist: string = ''
+  whitelist: string = '',
+  userInput: string[] = []
 ) => {
   const splittedData = splitDataToArr(filePath);
-  const keyValueObject = basicKeyValueSplit(splittedData, separator, whitelist);
+  const keyValueObject = basicKeyValueSplit(
+    splittedData,
+    separator,
+    whitelist,
+    userInput
+  );
   const parseKeys = createRules(keyValueObject);
-  return { results: keyValueObject, parseKeys };
+  return { result: keyValueObject, parseKeys };
 };
-// console.log(parseFunction(filePath, ':', '#'));
+// console.log(parseFunction(filePath, ':', '#', userKeys));
 
-const test = parseFunction(filePath, ':', '#');
-console.log(test);
+// const test = parseFunction(filePath, ':', '#');
+// console.log(test);
 
 const parseKeys = {
   key: '',
   dataType: '',
   visualize: true,
 };
+
+module.exports = parseFunction;
