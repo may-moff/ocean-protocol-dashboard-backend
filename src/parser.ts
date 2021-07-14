@@ -1,6 +1,6 @@
-const fs = require("fs");
-const dayjs = require("dayjs");
-const filePath = "public/algorithm.log";
+const fs = require('fs');
+const dayjs = require('dayjs');
+const filePath = 'public/algorithm.log';
 
 interface Results {
   [x: string]: string | number;
@@ -12,25 +12,25 @@ interface Rule {
   visualize: boolean;
 }
 
-const userKeys = [
-  "Start Time",
-  "End Time",
-  "Start counting lines for",
-  "Name",
-  "Type",
-  "Version",
-  "Memory",
-  "Size",
-  "Found directory at",
-];
+/* const userKeys = [
+  'Start Time',
+  'End Time',
+  'Start counting lines for',
+  'Name',
+  'Type',
+  'Version',
+  'Memory',
+  'Size',
+  'Found directory at',
+]; */
 
 const splitDataToArr = (filePath: string) => {
-  const inputFile = fs.readFileSync(filePath, "utf-8");
-  const textByLine = inputFile.split("\n");
+  const inputFile = fs.readFileSync(filePath, 'utf-8');
+  const textByLine = inputFile.split('\n');
   return textByLine;
 };
 const addCPU = (arr: string[], separator: string) => {
-  const cpuMakers = ["intel", "amd"];
+  const cpuMakers = ['intel', 'amd'];
   for (let i = 0; i < arr.length; i++) {
     if (arr[i].includes(separator)) {
       continue;
@@ -45,32 +45,32 @@ const addCPU = (arr: string[], separator: string) => {
 };
 
 const findDataType = (value: string | number) => {
-  if (typeof value === "number") {
-    return "number";
+  if (typeof value === 'number') {
+    return 'number';
   }
   if (dayjs(value).isValid()) {
-    return "timestamp";
+    return 'timestamp';
   }
-  return "string";
+  return 'string';
 };
 
 const addUserKeyValue = (
   arr: string[],
-  userKeys: string[],
+  userInput: string[],
   separator: string
 ) => {
   const output = [];
   for (let i = 0; i < arr.length; i++) {
-    for (let j = 0; j < userKeys.length; j++) {
-      if (arr[i].toLocaleLowerCase().includes(`${userKeys[j]}${separator}`)) {
+    for (let j = 0; j < userInput.length; j++) {
+      if (arr[i].toLocaleLowerCase().includes(`${userInput[j]}${separator}`)) {
         continue;
       }
       if (
-        arr[i].toLocaleLowerCase().includes(userKeys[j].toLocaleLowerCase())
+        arr[i].toLocaleLowerCase().includes(userInput[j].toLocaleLowerCase())
       ) {
         const newKeyValue = arr[i].replace(
-          userKeys[j],
-          `${userKeys[j]}${separator}`
+          userInput[j],
+          `${userInput[j]}${separator}`
         );
         output.push(newKeyValue);
       }
@@ -82,7 +82,8 @@ const addUserKeyValue = (
 const basicKeyValueSplit = (
   arr: string[],
   separator: string,
-  whitelist: string
+  whitelist: string,
+  userInput: string[]
 ) => {
   const input = [...arr];
   // Adding custom line to input array for cpu maker
@@ -91,23 +92,23 @@ const basicKeyValueSplit = (
     input.push(CPU);
   }
   // Adding custom lines to input array for user selected keys
-  const userKeyValues = addUserKeyValue(input, userKeys, separator);
+  const userKeyValues = addUserKeyValue(input, userInput, separator);
   if (userKeyValues.length > 0) {
     userKeyValues.forEach((value) => input.push(value));
   }
   const output: Results = {};
   const specialCharRegExList = `[&\/\\,+()$~%.#'":*?<>{}\-]`;
   const getSpecialCharRegEx = (string: string, whitelist: string) => {
-    const whitelistArr = whitelist.split("");
+    const whitelistArr = whitelist.split('');
     let output = string;
     for (let i = 0; i < whitelistArr.length; i++) {
-      output = output.replace(whitelistArr[i], "");
+      output = output.replace(whitelistArr[i], '');
     }
     return output;
   };
   const specialCharRegEx = new RegExp(
     getSpecialCharRegEx(specialCharRegExList, whitelist),
-    "g"
+    'g'
   );
   for (let i = 0; i < input.length; i++) {
     if (input[i].includes(separator)) {
@@ -120,27 +121,27 @@ const basicKeyValueSplit = (
 
       const key = keyValue[0]
         // remove all symbols except the whitelisted
-        .replace(specialCharRegEx, "")
+        .replace(specialCharRegEx, '')
         // remove all extra spaces
-        .replace(/^\s+|\s+$/g, "")
+        .replace(/^\s+|\s+$/g, '')
         // TEMPORARY SOLUTION TO DEAL WITH '# OF' IN THE LOG FILE
-        .replace("# of", "number of")
-        .replace(/\s+/g, "_")
+        .replace('# of', 'number of')
+        .replace(/\s+/g, '_')
         .toLocaleUpperCase();
 
       const value: string = keyValue[1].replace(
         /^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/gm,
-        ""
+        ''
       );
-      if (value === "") {
+      if (value === '') {
         continue;
       }
-      if (typeof value === "string" && !Number.isNaN(Number(value))) {
+      if (typeof value === 'string' && !Number.isNaN(Number(value))) {
         output[key] = +value;
         continue;
       }
       if (dayjs(value).isValid()) {
-        output[key] = dayjs(value)["$d"];
+        output[key] = dayjs(value)['$d'];
         continue;
       } else {
         output[key] = value;
@@ -148,10 +149,10 @@ const basicKeyValueSplit = (
       }
     }
 
-    if (arr[i].replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/gm, "") !== "") {
+    if (arr[i].replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/gm, '') !== '') {
       output[`DEFAULT_${i}`] = arr[i].replace(
         /^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/gm,
-        ""
+        ''
       );
     }
   }
@@ -162,8 +163,8 @@ const basicKeyValueSplit = (
 const createRules = (parsedObj: Results) => {
   const output: Rule[] = [];
   Object.keys(parsedObj).forEach((key) => {
-    const rule: Rule = { key, dataType: "string", visualize: true };
-    if (key.startsWith("DEFAULT_")) {
+    const rule: Rule = { key, dataType: 'string', visualize: true };
+    if (key.startsWith('DEFAULT_')) {
       rule.visualize = false;
     }
     rule.dataType = findDataType(parsedObj[key]);
@@ -175,21 +176,27 @@ const createRules = (parsedObj: Results) => {
 const parseFunction = (
   filePath: string,
   separator: string,
-  whitelist: string = ""
+  whitelist: string = '',
+  userInput: string[] = []
 ) => {
   const splittedData = splitDataToArr(filePath);
-  const keyValueObject = basicKeyValueSplit(splittedData, separator, whitelist);
+  const keyValueObject = basicKeyValueSplit(
+    splittedData,
+    separator,
+    whitelist,
+    userInput
+  );
   const parseKeys = createRules(keyValueObject);
   return { result: keyValueObject, parseKeys };
 };
-// console.log(parseFunction(filePath, ':', '#'));
+// console.log(parseFunction(filePath, ':', '#', userKeys));
 
 // const test = parseFunction(filePath, ':', '#');
 // console.log(test);
 
 const parseKeys = {
-  key: "",
-  dataType: "",
+  key: '',
+  dataType: '',
   visualize: true,
 };
 
