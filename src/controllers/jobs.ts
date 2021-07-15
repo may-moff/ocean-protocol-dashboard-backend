@@ -4,6 +4,12 @@ import { JobModel } from '../models/JobModel';
 const fs = require('fs');
 const parseFunction = require('../parser.ts');
 
+interface ParseKeys {
+  key: string;
+  dataType: string;
+  visualize: boolean;
+}
+
 module.exports.create = async (req: Request, res: Response) => {
   const userId: string = req.params.userId;
   const { algorithmId, dataName } = req.body;
@@ -29,10 +35,17 @@ module.exports.create = async (req: Request, res: Response) => {
     const update = { parseKeys: output.parseKeys };
     await AlgorithmModel.findOneAndUpdate(filter, update);
 
+    const displayContent = output.parseKeys.map((e: ParseKeys) => ({
+      ...e,
+      value: output.result[e.key],
+    }));
+    const defaultKeys = output.parseKeys.map((e: ParseKeys) => e.key);
+
     res.status(200).json({
       jobId: job._id,
       result: output.result,
-      parseKeys: output.parseKeys,
+      parseKeys: displayContent,
+      defaultKeys,
       algorithmId,
       userId,
       dataName,
