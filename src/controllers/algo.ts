@@ -10,6 +10,13 @@ interface ParseKeys {
   visualize: boolean;
 }
 
+interface ParseKeysValues {
+  key: string;
+  dataType: string;
+  visualize: boolean;
+  value: string | number;
+}
+
 module.exports.create = async (req: Request, res: Response) => {
   const userId: string = req.params.userId;
   const { name } = req.body;
@@ -56,10 +63,6 @@ module.exports.update = async (req: Request, res: Response) => {
   const algorithmId: string = req.params.algoId;
 
   try {
-    const filter = { _id: algorithmId };
-    const update = { parseKeys: req.body.parseKeys, rules: req.body.rules };
-    await AlgorithmModel.findOneAndUpdate(filter, update);
-
     const rules = req.body.parseKeys
       .map((e: ParseKeys) =>
         req.body.defaultKeys.includes(e.key) ? null : e.key
@@ -70,10 +73,20 @@ module.exports.update = async (req: Request, res: Response) => {
     const jobUpdate = { result: output.result };
     await JobModel.findByIdAndUpdate(jobFilter, jobUpdate);
 
-    const displayContent = output.parseKeys.map((e: ParseKeys) => ({
+    const updatedParseKeys = output.parseKeys.map((e: ParseKeys) => {
+      const currentElement = req.body.parseKeys.find(
+        (x: ParseKeysValues) => x.key === e.key
+      );
+      return currentElement ? { ...e, visualize: currentElement.visualize } : e;
+    });
+    const displayContent = updatedParseKeys.map((e: ParseKeys) => ({
       ...e,
       value: output.result[e.key],
     }));
+
+    const filter = { _id: algorithmId };
+    const update = { parseKeys: updatedParseKeys, rules };
+    await AlgorithmModel.findOneAndUpdate(filter, update);
 
     res.status(200).json({
       ...req.body,

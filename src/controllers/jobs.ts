@@ -49,6 +49,7 @@ module.exports.create = async (req: Request, res: Response) => {
       algorithmId,
       userId,
       dataName,
+      rules: [],
       filePath: uploadLocation,
     });
   } catch (error) {
