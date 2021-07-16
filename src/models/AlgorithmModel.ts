@@ -1,37 +1,37 @@
-import { Schema, model, ObjectId } from "mongoose";
+import { Schema, model, ObjectId } from 'mongoose'
 
 export interface IAlgorithm {
-  _id: string;
-  name: string;
-  userId: ObjectId;
-  parseKeys: Array<string | boolean>;
-  rules: Array<string | boolean>;
+  _id: string
+  name: string
+  userId: ObjectId
+  parseKeys: Array<string | boolean>
+  rules: Array<string | boolean>
   //   result: array of objects
   // get back on this to verify how to make it work better
-  save(): any;
+  save(): any
 }
 
 const algorithmSchema = new Schema<IAlgorithm>({
   name: {
     type: String,
-    required: true,
+    required: true
   },
   userId: {
     type: Schema.Types.ObjectId,
-    ref: "User",
+    ref: 'User'
   },
   parseKeys: [
     {
       key: String,
       dataType: String,
-      visualize: Boolean,
-    },
+      visualize: Boolean
+    }
   ],
   rules: [
     {
-      type: [Schema.Types.Mixed],
-    },
-  ],
-});
+      type: [Schema.Types.Mixed]
+    }
+  ]
+})
 
-export const AlgorithmModel = model<IAlgorithm>("Algorithm", algorithmSchema);
+export const AlgorithmModel = model<IAlgorithm>('Algorithm', algorithmSchema)
