@@ -25,6 +25,7 @@ interface Rule {
 ]; */
 
 const splitDataToArr = (filePath: string) => {
+  // eslint-disable-next-line security/detect-non-literal-fs-filename
   const inputFile = fs.readFileSync(filePath, 'utf-8')
   const textByLine = inputFile.split('\n')
   return textByLine
@@ -105,6 +106,7 @@ const basicKeyValueSplit = (
     }
     return output
   }
+  // eslint-disable-next-line security/detect-non-literal-regexp
   const specialCharRegEx = new RegExp(
     getSpecialCharRegEx(specialCharRegExList, whitelist),
     'g'
