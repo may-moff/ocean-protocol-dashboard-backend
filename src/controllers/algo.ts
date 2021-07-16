@@ -8,13 +8,7 @@ interface ParseKeys {
   key: string;
   dataType: string;
   visualize: boolean;
-}
-
-interface ParseKeysValues {
-  key: string;
-  dataType: string;
-  visualize: boolean;
-  value: string | number;
+  value?: string | number;
 }
 
 module.exports.create = async (req: Request, res: Response) => {
@@ -75,7 +69,7 @@ module.exports.update = async (req: Request, res: Response) => {
 
     const updatedParseKeys = output.parseKeys.map((e: ParseKeys) => {
       const currentElement = req.body.parseKeys.find(
-        (x: ParseKeysValues) => x.key === e.key
+        (x: ParseKeys) => x.key === e.key
       );
       return currentElement ? { ...e, visualize: currentElement.visualize } : e;
     });
