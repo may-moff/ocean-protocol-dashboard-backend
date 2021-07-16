@@ -1,18 +1,18 @@
 // import { recoverPersonalSignature } from 'eth-sig-util';
-const { recoverPersonalSignature } = require("eth-sig-util");
-const ethereumjsUtil = require("ethereumjs-util");
-const { bufferToHex } = ethereumjsUtil;
-const jwt = require("jsonwebtoken");
-import { NextFunction, Request, Response } from "express";
-const config = require("../config");
-import { UserModel, IUser } from "../models/UserModel";
+import { NextFunction, Request, Response } from 'express'
+import { UserModel, IUser } from '../models/UserModel'
+const { recoverPersonalSignature } = require('eth-sig-util')
+const ethereumjsUtil = require('ethereumjs-util')
+const { bufferToHex } = ethereumjsUtil
+const jwt = require('jsonwebtoken')
+const config = require('../config')
 
 module.exports.create = (req: Request, res: Response, next: NextFunction) => {
-  const { signature, publicAddress } = req.body;
+  const { signature, publicAddress } = req.body
   if (!signature || !publicAddress)
     return res
       .status(400)
-      .send({ error: "Request should have signature and publicAddress" });
+      .send({ error: 'Request should have signature and publicAddress' })
 
   return (
     UserModel.findOne({ publicAddress })
@@ -20,41 +20,41 @@ module.exports.create = (req: Request, res: Response, next: NextFunction) => {
       .then((user) => {
         if (!user) {
           res.status(401).send({
-            error: `User with publicAddress ${publicAddress} is not found in database`,
-          });
+            error: `User with publicAddress ${publicAddress} is not found in database`
+          })
 
-          return null;
+          return null
         }
 
-        return user;
+        return user
       })
       // Verify digital signature
       .then((user) => {
         if (!(user instanceof UserModel)) {
           // Should not happen, we should have already sent the response
-          throw new Error('User is not defined in "Verify digital signature".');
+          throw new Error('User is not defined in "Verify digital signature".')
         }
 
-        const msg = `I am signing my one-time nonce: ${user.nonce}`;
+        const msg = `I am signing my one-time nonce: ${user.nonce}`
 
         // We now are in possession of msg, publicAddress and signature. We
         // will use a helper from eth-sig-util to extract the address from the signature
-        const msgBufferHex = bufferToHex(Buffer.from(msg, "utf8"));
+        const msgBufferHex = bufferToHex(Buffer.from(msg, 'utf8'))
         const address = recoverPersonalSignature({
           data: msgBufferHex,
-          sig: signature,
-        });
+          sig: signature
+        })
 
         // The signature verification is successful if the address found with
         // sigUtil.recoverPersonalSignature matches the initial publicAddress
         if (address.toLowerCase() === publicAddress.toLowerCase()) {
-          return user;
+          return user
         } else {
           res.status(401).send({
-            error: "Signature verification failed",
-          });
+            error: 'Signature verification failed'
+          })
 
-          return null;
+          return null
         }
       })
       // Generate a new nonce for the user
@@ -64,11 +64,11 @@ module.exports.create = (req: Request, res: Response, next: NextFunction) => {
 
           throw new Error(
             'User is not defined in "Generate a new nonce for the user".'
-          );
+          )
         }
 
-        user.nonce = Math.floor(Math.random() * 10000);
-        return user.save();
+        user.nonce = Math.floor(Math.random() * 10000)
+        return user.save()
       })
       // Create JWT
       .then((user: IUser) => {
@@ -77,26 +77,26 @@ module.exports.create = (req: Request, res: Response, next: NextFunction) => {
             {
               payload: {
                 id: user._id,
-                publicAddress,
-              },
+                publicAddress
+              }
             },
             config.secret,
             {
-              algorithm: config.algorithms[0],
+              algorithm: config.algorithms[0]
             },
             (err: any, token: string | PromiseLike<string>) => {
               if (err) {
-                return reject(err);
+                return reject(err)
               }
               if (!token) {
-                return new Error("Empty token");
+                return new Error('Empty token')
               }
-              return resolve(token);
+              return resolve(token)
             }
           )
-        );
+        )
       })
       .then((accessToken: string) => res.json({ accessToken }))
       .catch(next)
-  );
-};
+  )
+}
