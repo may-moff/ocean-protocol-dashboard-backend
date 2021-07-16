@@ -1,4 +1,5 @@
 import { Request, Response } from 'express'
+import path from 'path'
 import { AlgorithmModel } from '../models/AlgorithmModel'
 import { JobModel } from '../models/JobModel'
 const fs = require('fs')
@@ -15,9 +16,13 @@ module.exports.create = async (req: Request, res: Response) => {
   const { algorithmId, dataName } = req.body
 
   try {
-    if (!req.file) throw 'file not available'
-    const uploadLocation =
-      __dirname + '/../../public/demo/' + req.file.originalname
+    if (!req.file) throw new Error('file not available')
+    const uploadLocation = path.join(
+      __dirname,
+      '/../../public/demo/',
+      req.file.originalname
+    )
+    // eslint-disable-next-line security/detect-non-literal-fs-filename
     fs.writeFileSync(
       uploadLocation,
       Buffer.from(new Uint8Array(req.file.buffer))

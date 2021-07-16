@@ -17,7 +17,7 @@ module.exports.create = async (req: Request, res: Response) => {
 
   try {
     const currentUser = await UserModel.findOne({ publicAddress: userId })
-    if (!currentUser) throw 'user not found'
+    if (!currentUser) throw new Error('user not found')
     const findAlgo = await AlgorithmModel.findOne({ name })
     if (findAlgo) res.status(200).json(findAlgo)
     const algorithm = new AlgorithmModel({ name, userId: currentUser._id })
