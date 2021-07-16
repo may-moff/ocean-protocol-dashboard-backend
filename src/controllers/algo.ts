@@ -4,8 +4,12 @@ import { JobModel } from '../models/JobModel';
 import { UserModel } from '../models/UserModel';
 const parseFunction = require('../parser.ts');
 
-// create
-// get
+interface ParseKeys {
+  key: string;
+  dataType: string;
+  visualize: boolean;
+  value?: string | number;
+}
 
 module.exports.create = async (req: Request, res: Response) => {
   const userId: string = req.params.userId;
@@ -53,21 +57,36 @@ module.exports.update = async (req: Request, res: Response) => {
   const algorithmId: string = req.params.algoId;
 
   try {
-    const filter = { _id: algorithmId };
-    const update = { parseKeys: req.body.parseKeys, rules: req.body.rules };
-    await AlgorithmModel.findOneAndUpdate(filter, update);
-    const output = await parseFunction(
-      req.body.filePath,
-      ':',
-      '#',
-      req.body.rules
-    );
-    const jobFilter = { _id: req.body._id };
+    const rules = req.body.parseKeys
+      .map((e: ParseKeys) =>
+        req.body.defaultKeys.includes(e.key) ? null : e.key
+      )
+      .filter((e: string) => e !== null);
+    const output = await parseFunction(req.body.filePath, ':', '#', rules);
+    const jobFilter = { _id: req.body.jobId };
     const jobUpdate = { result: output.result };
     await JobModel.findByIdAndUpdate(jobFilter, jobUpdate);
+
+    const updatedParseKeys = output.parseKeys.map((e: ParseKeys) => {
+      const currentElement = req.body.parseKeys.find(
+        (x: ParseKeys) => x.key === e.key
+      );
+      return currentElement ? { ...e, visualize: currentElement.visualize } : e;
+    });
+    const displayContent = updatedParseKeys.map((e: ParseKeys) => ({
+      ...e,
+      value: output.result[e.key],
+    }));
+
+    const filter = { _id: algorithmId };
+    const update = { parseKeys: updatedParseKeys, rules };
+    await AlgorithmModel.findOneAndUpdate(filter, update);
+
     res.status(200).json({
+      ...req.body,
       result: output.result,
-      parseKeys: output.parseKeys,
+      parseKeys: displayContent,
+      rules,
     });
   } catch (error) {
     res.status(400).send({ message: 'no no no' });
