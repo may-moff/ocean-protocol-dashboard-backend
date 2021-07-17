@@ -3,7 +3,7 @@ import path from 'path'
 import { AlgorithmModel } from '../models/AlgorithmModel'
 import { JobModel } from '../models/JobModel'
 const fs = require('fs')
-const parseFunction = require('../parser.ts')
+const parseFunction = require('../parser')
 
 interface ParseKeys {
   key: string

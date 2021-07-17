@@ -2,7 +2,7 @@ import { Request, Response } from 'express'
 import { AlgorithmModel } from '../models/AlgorithmModel'
 import { JobModel } from '../models/JobModel'
 import { UserModel } from '../models/UserModel'
-const parseFunction = require('../parser.ts')
+const parseFunction = require('../parser')
 
 interface ParseKeys {
   key: string
