@@ -4,3 +4,5 @@
 .env
 
 /public/demo
+
+/build
