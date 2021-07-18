@@ -1,31 +1,3 @@
-// require('dotenv').config()
-
-// const AWS = require('aws-sdk')
-// const ID = process.env.ACCESS_ID
-// const SECRET = process.env.SECRET_KEY
-// const BUCKET_NAME = 'ocean-dashboard-log'
-
-// const s3 = new AWS.S3({
-//   accessKeyId: ID,
-//   secretAccessKey: SECRET
-// })
-
-// const params = {
-//   Bucket: BUCKET_NAME,
-//   CreateBucketConfiguration: {
-//     // Set your region here
-//     LocationConstraint: 'eu-central-1'
-//   }
-// }
-
-// s3.createBucket(
-//   params,
-//   function (err: { stack: any }, data: { Location: any }) {
-//     if (err) console.log(err, err.stack)
-//     else console.log('Bucket Created Successfully', data.Location)
-//   }
-// )
-
 require('dotenv').config()
 const fs = require('fs')
 const S3 = require('aws-sdk/clients/s3')
@@ -41,12 +13,12 @@ const s3 = new S3({
   secretAccessKey
 })
 
-// uploads a file to s3
 function uploadFile(file: {
   path: string
   filename: string
   originalname: string
 }) {
+  // eslint-disable-next-line security/detect-non-literal-fs-filename
   const fileStream = fs.createReadStream(file.path)
 
   const uploadParams = {
@@ -59,13 +31,20 @@ function uploadFile(file: {
 }
 exports.uploadFile = uploadFile
 
-// downloads a file from s3
-function getFileStream(fileKey: any) {
+async function getFileStream(fileKey: any) {
   const downloadParams = {
     Key: fileKey,
     Bucket: bucketName
   }
+  // eslint-disable-next-line security/detect-non-literal-fs-filename
+  const file = require('fs').createWriteStream(`public/uploads/${fileKey}`)
 
-  return s3.getObject(downloadParams)
+  // eslint-disable-next-line no-new
+  return new Promise((resolve, reject) => {
+    const pipe = s3.getObject(downloadParams).createReadStream().pipe(file)
+    pipe.on('error', reject)
+    pipe.on('close', resolve)
+  })
 }
+
 exports.getFileStream = getFileStream
