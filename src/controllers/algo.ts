@@ -3,6 +3,10 @@ import { AlgorithmModel } from '../models/AlgorithmModel'
 import { JobModel } from '../models/JobModel'
 import { UserModel } from '../models/UserModel'
 const parseFunction = require('../parser')
+const fs = require('fs')
+// eslint-disable-next-line security/detect-non-literal-fs-filename
+const unlinkFile = require('util').promisify(fs.unlink)
+// const { getFileStream } = require('../aws-config')
 
 interface ParseKeys {
   key: string
@@ -54,6 +58,7 @@ module.exports.index = async (req: Request, res: Response) => {
 
 module.exports.update = async (req: Request, res: Response) => {
   const algorithmId: string = req.params.algoId
+  const filePath = `public/uploads/${req.body.key.replace('.log', '')}`
 
   try {
     const rules = req.body.parseKeys
@@ -61,7 +66,7 @@ module.exports.update = async (req: Request, res: Response) => {
         req.body.defaultKeys.includes(e.key) ? null : e.key
       )
       .filter((e: string) => e !== null)
-    const output = await parseFunction(req.body.filePath, ':', '#', rules)
+    const output = await parseFunction(filePath, ':', '#', rules)
     const jobFilter = { _id: req.body.jobId }
     const jobUpdate = { result: output.result }
     await JobModel.findByIdAndUpdate(jobFilter, jobUpdate)
@@ -81,6 +86,8 @@ module.exports.update = async (req: Request, res: Response) => {
     const update = { parseKeys: updatedParseKeys, rules }
     await AlgorithmModel.findOneAndUpdate(filter, update)
 
+    await unlinkFile(filePath)
+
     res.status(200).json({
       ...req.body,
       result: output.result,
@@ -90,4 +97,44 @@ module.exports.update = async (req: Request, res: Response) => {
   } catch (error) {
     res.status(400).send({ message: 'no no no' })
   }
+
+  // const algorithmId: string = req.params.algoId
+
+  // try {
+  //   const rules = req.body.parseKeys
+  //     .map((e: ParseKeys) =>
+  //       req.body.defaultKeys.includes(e.key) ? null : e.key
+  //     )
+  //     .filter((e: string) => e !== null)
+  //   const output = await parseFunction(req.body.filePath, ':', '#', rules)
+  //   const jobFilter = { _id: req.body.jobId }
+  //   const jobUpdate = { result: output.result }
+  //   await JobModel.findByIdAndUpdate(jobFilter, jobUpdate)
+
+  //   const updatedParseKeys = output.parseKeys.map((e: ParseKeys) => {
+  //     const currentElement = req.body.parseKeys.find(
+  //       (x: ParseKeys) => x.key === e.key
+  //     )
+  //     return currentElement ? { ...e, visualize: currentElement.visualize } : e
+  //   })
+  //   const displayContent = updatedParseKeys.map((e: ParseKeys) => ({
+  //     ...e,
+  //     value: output.result[e.key]
+  //   }))
+
+  //   const filter = { _id: algorithmId }
+  //   const update = { parseKeys: updatedParseKeys, rules }
+  //   await AlgorithmModel.findOneAndUpdate(filter, update)
+
+  //   await unlinkFile()
+
+  //   res.status(200).json({
+  //     ...req.body,
+  //     result: output.result,
+  //     parseKeys: displayContent,
+  //     rules
+  //   })
+  // } catch (error) {
+  //   res.status(400).send({ message: 'no no no' })
+  // }
 }
