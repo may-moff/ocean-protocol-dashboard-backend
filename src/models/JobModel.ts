@@ -17,6 +17,7 @@ const jobSchema = new Schema<IJob>({
   jobName: {
     type: String
   },
+
   algorithmId: {
     type: Schema.Types.ObjectId,
     ref: 'Algorithm'

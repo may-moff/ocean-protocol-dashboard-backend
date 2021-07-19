@@ -16,7 +16,7 @@ interface ParseKeys {
 module.exports.create = async (req: Request, res: Response) => {
   const { file } = req
   const { userId } = req.params
-  const { algorithmId, dataName, jobName, algoName } = req.body
+  const { algorithmId, dataName, jobName } = req.body
 
   try {
     if (!file) throw new Error('file not available')
@@ -26,7 +26,6 @@ module.exports.create = async (req: Request, res: Response) => {
     const output = parseFunction(file.path, ':', '#')
     const job = new JobModel({
       jobName,
-      algoName,
       algorithmId,
       dataName,
       userId,
@@ -53,7 +52,6 @@ module.exports.create = async (req: Request, res: Response) => {
       defaultKeys,
       jobName,
       algorithmId,
-      algoName,
       userId,
       dataName,
       rules: [],
@@ -63,5 +61,19 @@ module.exports.create = async (req: Request, res: Response) => {
     if (error === 'file not available')
       res.status(400).send({ message: "Can't access file", error })
     res.status(400).send({ message: "Can't save job", error })
+  }
+}
+
+module.exports.index = async (req: Request, res: Response) => {
+  try {
+    console.log('whatup')
+    const jobs = await JobModel.find({})
+    res.status(200).json(jobs)
+    console.log(jobs)
+  } catch (error) {
+    res.status(400).send({
+      message: 'cannot get all jobs',
+      error
+    })
   }
 }

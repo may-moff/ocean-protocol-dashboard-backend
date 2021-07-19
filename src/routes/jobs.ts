@@ -10,3 +10,4 @@ export const jobsRouter = express.Router({ mergeParams: true })
 // jobsRouter.post('/', controller.create);
 
 jobsRouter.post('/', upload.single('logBlob'), controller.create)
+jobsRouter.get('/index', controller.index)
