@@ -47,7 +47,7 @@ const findAndReplaceCustomRules = (
   separator: string
 ) => {
   // looks for a match in a string 'case-insensitive-
-  var reg = new RegExp('(' + find + ')', 'gi')
+  var reg = new RegExp(`(${find})`, 'gi')
   // $1 returns the first match in a RegExp
   return str.replace(reg, `$1${separator}`)
 }
