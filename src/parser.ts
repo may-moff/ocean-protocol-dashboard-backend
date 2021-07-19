@@ -1,6 +1,5 @@
 const fs2 = require('fs')
 const dayjs = require('dayjs')
-// const filePath = 'public/algorithm.log'
 
 interface Results {
   [x: string]: string | number
@@ -11,18 +10,6 @@ interface Rule {
   dataType: string
   visualize: boolean
 }
-
-/* const userKeys = [
-  'Start Time',
-  'End Time',
-  'Start counting lines for',
-  'Name',
-  'Type',
-  'Version',
-  'Memory',
-  'Size',
-  'Found directory at',
-]; */
 
 const splitDataToArr = (filePath: string) => {
   // eslint-disable-next-line security/detect-non-literal-fs-filename
@@ -54,6 +41,17 @@ const findDataType = (value: string | number) => {
   return 'string'
 }
 
+const findAndReplaceCustomRules = (
+  str: string,
+  find: string,
+  separator: string
+) => {
+  // looks for a match in a string 'case-insensitive-
+  var reg = new RegExp(`(${find})`, 'gi')
+  // $1 returns the first match in a RegExp
+  return str.replace(reg, `$1${separator}`)
+}
+
 const addUserKeyValue = (
   arr: string[],
   userInput: string[],
@@ -68,9 +66,13 @@ const addUserKeyValue = (
       if (
         arr[i].toLocaleLowerCase().includes(userInput[j].toLocaleLowerCase())
       ) {
-        const newKeyValue = arr[i].replace(
+        // const newKeyValue = arr[i]
+        //   .toLocaleLowerCase()
+        //   .replace(userInput[j], `${userInput[j]}${separator}`)
+        const newKeyValue = findAndReplaceCustomRules(
+          arr[i],
           userInput[j],
-          `${userInput[j]}${separator}`
+          separator
         )
         output.push(newKeyValue)
       }
@@ -126,7 +128,7 @@ const basicKeyValueSplit = (
         // remove all extra spaces
         .replace(/^\s+|\s+$/g, '')
         // TEMPORARY SOLUTION TO DEAL WITH '# OF' IN THE LOG FILE
-        .replace('# of', 'number of')
+        // .replace('# of', 'number of')
         .replace(/\s+/g, '_')
         .toLocaleUpperCase()
 
@@ -190,9 +192,5 @@ const parseFunction = (
   const parseKeys = createRules(keyValueObject)
   return { result: keyValueObject, parseKeys }
 }
-// console.log(parseFunction(filePath, ':', '#', userKeys));
-
-// const test = parseFunction(filePath, ':', '#');
-// console.log(test);
 
 module.exports = parseFunction
