@@ -1,9 +1,11 @@
 import { Request, Response } from 'express'
-import path from 'path'
 import { AlgorithmModel } from '../models/AlgorithmModel'
 import { JobModel } from '../models/JobModel'
 const fs = require('fs')
-const parseFunction = require('../parser.ts')
+const { uploadFile } = require('../aws-config')
+const parseFunction = require('../parser')
+// eslint-disable-next-line security/detect-non-literal-fs-filename
+const unlinkFile = require('util').promisify(fs.unlink)
 
 interface ParseKeys {
   key: string
@@ -12,27 +14,21 @@ interface ParseKeys {
 }
 
 module.exports.create = async (req: Request, res: Response) => {
+  const { file } = req
   const { userId } = req.params
   const { algorithmId, dataName } = req.body
 
   try {
-    if (!req.file) throw new Error('file not available')
-    const uploadLocation = path.join(
-      __dirname,
-      '/../../public/demo/',
-      req.file.originalname
-    )
-    // eslint-disable-next-line security/detect-non-literal-fs-filename
-    fs.writeFileSync(
-      uploadLocation,
-      Buffer.from(new Uint8Array(req.file.buffer))
-    )
-    const output = parseFunction(uploadLocation, ':', '#')
+    if (!file) throw new Error('file not available')
+
+    const result = await uploadFile(file)
+
+    const output = parseFunction(file.path, ':', '#')
     const job = new JobModel({
       algorithmId,
       dataName,
       userId,
-      filePath: uploadLocation,
+      filePath: result.Location,
       result: output.result
     })
     await job.save()
@@ -46,6 +42,8 @@ module.exports.create = async (req: Request, res: Response) => {
     }))
     const defaultKeys = output.parseKeys.map((e: ParseKeys) => e.key)
 
+    await unlinkFile(file.path)
+
     res.status(200).json({
       jobId: job._id,
       result: output.result,
@@ -55,7 +53,7 @@ module.exports.create = async (req: Request, res: Response) => {
       userId,
       dataName,
       rules: [],
-      filePath: uploadLocation
+      filePath: job.filePath
     })
   } catch (error) {
     if (error === 'file not available')

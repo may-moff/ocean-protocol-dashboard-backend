@@ -1,4 +1,4 @@
-const fs = require('fs')
+const fs2 = require('fs')
 const dayjs = require('dayjs')
 // const filePath = 'public/algorithm.log'
 
@@ -26,7 +26,7 @@ interface Rule {
 
 const splitDataToArr = (filePath: string) => {
   // eslint-disable-next-line security/detect-non-literal-fs-filename
-  const inputFile = fs.readFileSync(filePath, 'utf-8')
+  const inputFile = fs2.readFileSync(filePath, 'utf-8')
   const textByLine = inputFile.split('\n')
   return textByLine
 }
