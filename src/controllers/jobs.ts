@@ -16,7 +16,7 @@ interface ParseKeys {
 module.exports.create = async (req: Request, res: Response) => {
   const { file } = req
   const { userId } = req.params
-  const { algorithmId, dataName } = req.body
+  const { algorithmId, dataName, jobName, algoName } = req.body
 
   try {
     if (!file) throw new Error('file not available')
@@ -25,6 +25,8 @@ module.exports.create = async (req: Request, res: Response) => {
 
     const output = parseFunction(file.path, ':', '#')
     const job = new JobModel({
+      jobName,
+      algoName,
       algorithmId,
       dataName,
       userId,
@@ -49,7 +51,9 @@ module.exports.create = async (req: Request, res: Response) => {
       result: output.result,
       parseKeys: displayContent,
       defaultKeys,
+      jobName,
       algorithmId,
+      algoName,
       userId,
       dataName,
       rules: [],

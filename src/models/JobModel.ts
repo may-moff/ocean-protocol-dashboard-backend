@@ -2,6 +2,7 @@ import { Schema, model, ObjectId } from 'mongoose'
 
 export interface IJob {
   _id: string
+  jobName: string
   algorithmId: ObjectId
   dataName: string
   userId: ObjectId
@@ -13,14 +14,15 @@ export interface IJob {
 }
 
 const jobSchema = new Schema<IJob>({
+  jobName: {
+    type: String
+  },
   algorithmId: {
     type: Schema.Types.ObjectId,
     ref: 'Algorithm'
   },
   dataName: {
-    type: String,
-    // default: () => Math.floor(Math.random() * 100),
-    required: true
+    type: String
   },
 
   userId: {
@@ -31,7 +33,7 @@ const jobSchema = new Schema<IJob>({
   filePath: {
     type: String
   },
-  // make this object
+
   result: {
     type: [Schema.Types.Mixed]
   }
