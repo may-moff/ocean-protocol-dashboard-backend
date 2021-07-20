@@ -1,9 +1,11 @@
 import { Request, Response } from 'express'
+
 import { AlgorithmModel } from '../models/AlgorithmModel'
 import { JobModel } from '../models/JobModel'
 const fs = require('fs')
 const { uploadFile } = require('../aws-config')
 const parseFunction = require('../parser')
+const mongoose = require('mongoose')
 // eslint-disable-next-line security/detect-non-literal-fs-filename
 const unlinkFile = require('util').promisify(fs.unlink)
 
@@ -75,5 +77,23 @@ module.exports.index = async (req: Request, res: Response) => {
       message: 'cannot get all jobs',
       error
     })
+  }
+}
+
+module.exports.show = async (req: Request, res: Response) => {
+  const { jobId, userId } = req.params
+  try {
+    const job = await JobModel.findById(jobId)
+    if (!job) throw new Error('Job not found')
+    // const algorithmId = job.algorithmId
+    const { algorithmId } = job
+    const allJobs = await JobModel.find({
+      algorithmId: mongoose.Types.ObjectId(algorithmId),
+      userId: mongoose.Types.ObjectId(userId)
+    })
+    res.status(200).json(allJobs)
+  } catch (error) {
+    console.log(error)
+    res.status(400).send({ message: 'Cannot get jobs', error })
   }
 }
