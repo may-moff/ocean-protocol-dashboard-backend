@@ -45,15 +45,16 @@ module.exports.create = async (req: Request, res: Response) => {
     await unlinkFile(file.path)
 
     res.status(200).json({
-      jobId: job._id,
-      result: output.result,
-      parseKeys: displayContent,
-      defaultKeys,
       algorithmId,
-      userId,
       dataName,
+      defaultKeys,
+      filePath: job.filePath,
+      jobId: job._id,
+      parseKeys: displayContent,
+      removedItemsHistory: [],
+      result: output.result,
       rules: [],
-      filePath: job.filePath
+      userId
     })
   } catch (error) {
     if (error === 'file not available')
