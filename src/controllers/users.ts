@@ -14,15 +14,15 @@ module.exports.find = async (
   try {
     if (!address) throw new Error('Invalid Address')
     const users = await UserModel.find(address)
-    if (!users[0]) throw new Error()
-    res.status(200).json(users[0])
-    next()
+    if (!users) throw new Error()
+    res.status(200).json(users)
   } catch (error) {
     if (error === 'Invalid Address') {
       res.status(400).send({ message: 'Invalid Address' })
     } else {
       res.status(404).send({ message: 'User not found', error })
     }
+    next()
   }
 }
 
