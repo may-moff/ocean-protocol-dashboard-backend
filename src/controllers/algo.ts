@@ -5,6 +5,7 @@ import { UserModel } from '../models/UserModel'
 const parseFunction = require('../parser')
 const fs = require('fs')
 const path = require('path')
+const mongoose = require('mongoose')
 // eslint-disable-next-line security/detect-non-literal-fs-filename
 const unlinkFile = require('util').promisify(fs.unlink)
 const { getFileStream } = require('../aws-config')
@@ -21,13 +22,18 @@ module.exports.create = async (req: Request, res: Response) => {
   const { algoName } = req.body
 
   try {
-    const currentUser = await UserModel.findOne({ publicAddress: userId })
+    const currentUser = await UserModel.findById(userId)
+
     if (!currentUser) throw new Error('user not found')
     const findAlgo = await AlgorithmModel.findOne({
       algoName,
-      publicAddress: userId
+      userId: mongoose.Types.ObjectId(userId)
     })
-    if (findAlgo) res.status(200).json(findAlgo)
+
+    if (findAlgo) {
+      res.status(200).json(findAlgo)
+      return
+    }
     const algorithm = new AlgorithmModel({ algoName, userId: currentUser._id })
     await algorithm.save()
     res.status(200).json(algorithm)
