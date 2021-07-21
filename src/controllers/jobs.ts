@@ -57,7 +57,8 @@ module.exports.create = async (req: Request, res: Response) => {
       userId,
       dataName,
       rules: [],
-      filePath: job.filePath
+      filePath: job.filePath,
+      date
     })
   } catch (error) {
     if (error === 'file not available')
@@ -68,6 +69,7 @@ module.exports.create = async (req: Request, res: Response) => {
 
 module.exports.index = async (req: Request, res: Response) => {
   try {
+    // find all jobs where publicaddress.userid is the same as jobs.userId
     console.log('whatup')
     const jobs = await JobModel.find({})
     res.status(200).json(jobs)

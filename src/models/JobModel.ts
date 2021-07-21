@@ -8,6 +8,7 @@ export interface IJob {
   userId: ObjectId
   filePath: string
   result: { [x: string]: string | number }
+  date: Date
 
   // get back on this to verify how to make it work better
   save(): any
@@ -37,7 +38,9 @@ const jobSchema = new Schema<IJob>({
 
   result: {
     type: [Schema.Types.Mixed]
-  }
+  },
+
+  date: { type: Date, default: Date.now }
 })
 
 export const JobModel = model<IJob>('Job', jobSchema)
