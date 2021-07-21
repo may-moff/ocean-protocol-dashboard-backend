@@ -5,6 +5,7 @@ import { UserModel } from '../models/UserModel'
 const parseFunction = require('../parser')
 const fs = require('fs')
 const path = require('path')
+const mongoose = require('mongoose')
 // eslint-disable-next-line security/detect-non-literal-fs-filename
 const unlinkFile = require('util').promisify(fs.unlink)
 const { getFileStream } = require('../aws-config')
@@ -18,14 +19,22 @@ interface ParseKeys {
 
 module.exports.create = async (req: Request, res: Response) => {
   const { userId } = req.params
-  const { name } = req.body
+  const { algoName } = req.body
 
   try {
-    const currentUser = await UserModel.findOne({ publicAddress: userId })
+    const currentUser = await UserModel.findById(userId)
+
     if (!currentUser) throw new Error('user not found')
-    const findAlgo = await AlgorithmModel.findOne({ name })
-    if (findAlgo) res.status(200).json(findAlgo)
-    const algorithm = new AlgorithmModel({ name, userId: currentUser._id })
+    const findAlgo = await AlgorithmModel.findOne({
+      algoName,
+      userId: mongoose.Types.ObjectId(userId)
+    })
+
+    if (findAlgo) {
+      res.status(200).json(findAlgo)
+      return
+    }
+    const algorithm = new AlgorithmModel({ algoName, userId: currentUser._id })
     await algorithm.save()
     res.status(200).json(algorithm)
   } catch (error) {
@@ -38,9 +47,9 @@ module.exports.create = async (req: Request, res: Response) => {
 }
 
 module.exports.show = async (req: Request, res: Response, data: any) => {
-  const { name } = req.body
+  const { algoName } = req.body
   try {
-    const algorithm = await AlgorithmModel.findOne({ name })
+    const algorithm = await AlgorithmModel.findOne({ algoName })
     res.status(200).json(algorithm)
   } catch (error) {
     res.status(400).send({ message: 'cant get the algo', error })

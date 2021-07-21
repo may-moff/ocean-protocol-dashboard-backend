@@ -2,7 +2,7 @@ import { Schema, model, ObjectId } from 'mongoose'
 
 export interface IAlgorithm {
   _id: string
-  name: string
+  algoName: string
   userId: ObjectId
   parseKeys: Array<string | boolean>
   rules: Array<string | boolean>
@@ -12,7 +12,7 @@ export interface IAlgorithm {
 }
 
 const algorithmSchema = new Schema<IAlgorithm>({
-  name: {
+  algoName: {
     type: String,
     required: true
   },

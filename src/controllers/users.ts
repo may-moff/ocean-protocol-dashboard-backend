@@ -11,12 +11,17 @@ module.exports.find = async (
     req.query && req.query.publicAddress
       ? { publicAddress: req.query.publicAddress }
       : undefined
-
   try {
+    if (!address) throw new Error('Invalid Address')
     const users = await UserModel.find(address)
-    res.json(users)
+    if (!users) throw new Error()
+    res.status(200).json(users)
   } catch (error) {
-    console.log(error)
+    if (error === 'Invalid Address') {
+      res.status(400).send({ message: 'Invalid Address' })
+    } else {
+      res.status(404).send({ message: 'User not found', error })
+    }
     next()
   }
 }
@@ -30,7 +35,7 @@ module.exports.create = async (
   try {
     const newUser = new UserModel({ publicAddress })
     await newUser.save()
-    res.json(newUser)
+    res.status(200).json(newUser)
   } catch (error) {
     console.log(error)
     next()

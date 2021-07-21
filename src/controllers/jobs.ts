@@ -1,9 +1,11 @@
 import { Request, Response } from 'express'
+
 import { AlgorithmModel } from '../models/AlgorithmModel'
 import { JobModel } from '../models/JobModel'
 const fs = require('fs')
 const { uploadFile } = require('../aws-config')
 const parseFunction = require('../parser')
+const mongoose = require('mongoose')
 // eslint-disable-next-line security/detect-non-literal-fs-filename
 const unlinkFile = require('util').promisify(fs.unlink)
 
@@ -16,7 +18,7 @@ interface ParseKeys {
 module.exports.create = async (req: Request, res: Response) => {
   const { file } = req
   const { userId } = req.params
-  const { algorithmId, dataName } = req.body
+  const { algorithmId, dataName, jobName } = req.body
 
   try {
     if (!file) throw new Error('file not available')
@@ -25,6 +27,7 @@ module.exports.create = async (req: Request, res: Response) => {
 
     const output = parseFunction(file.path, ':', '#')
     const job = new JobModel({
+      jobName,
       algorithmId,
       dataName,
       userId,
@@ -48,8 +51,10 @@ module.exports.create = async (req: Request, res: Response) => {
       algorithmId,
       dataName,
       defaultKeys,
+      date: job.date,
       filePath: job.filePath,
       jobId: job._id,
+      jobName,
       parseKeys: displayContent,
       removedItemsHistory: [],
       result: output.result,
@@ -60,5 +65,46 @@ module.exports.create = async (req: Request, res: Response) => {
     if (error === 'file not available')
       res.status(400).send({ message: "Can't access file", error })
     res.status(400).send({ message: "Can't save job", error })
+  }
+}
+
+module.exports.index = async (req: Request, res: Response) => {
+  const { userId } = req.params
+
+  try {
+    // find all jobs where publicaddress.userid is the same as jobs.userId
+    console.log('whatup')
+    const jobs = await JobModel.find({
+      userId: mongoose.Types.ObjectId(userId)
+    }).populate('algorithmId', 'algoName')
+
+    console.log('helloooo', jobs)
+
+    if (!jobs) throw new Error('There are no jobs associated with this user')
+    res.status(200).json(jobs)
+    console.log(jobs)
+  } catch (error) {
+    res.status(400).send({
+      message: 'Cannot get the jobs for this user',
+      error
+    })
+  }
+}
+
+module.exports.show = async (req: Request, res: Response) => {
+  const { jobId, userId } = req.params
+  try {
+    const job = await JobModel.findById(jobId)
+    if (!job) throw new Error('Job not found')
+    // const algorithmId = job.algorithmId
+    const { algorithmId } = job
+    const allJobs = await JobModel.find({
+      algorithmId: mongoose.Types.ObjectId(algorithmId),
+      userId: mongoose.Types.ObjectId(userId)
+    })
+    res.status(200).json(allJobs)
+  } catch (error) {
+    console.log(error)
+    res.status(400).send({ message: 'Cannot get jobs', error })
   }
 }
