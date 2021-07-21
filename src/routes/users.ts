@@ -4,11 +4,12 @@ const express = require('express')
 const config = require('../config')
 const controller = require('../controllers/users')
 const jwt = require('express-jwt')
+const authenticateToken = require('../middlewares/authenticateToken')
 
 export const userRouter = express.Router({ mergeParams: true })
 
 /** GET /api/users */
-userRouter.get('/', controller.find)
+userRouter.get('/', authenticateToken, controller.find)
 
 /** POST /api/users */
 userRouter.post('/', controller.create)

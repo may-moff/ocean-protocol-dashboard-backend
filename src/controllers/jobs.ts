@@ -1,5 +1,4 @@
 import { Request, Response } from 'express'
-
 import { AlgorithmModel } from '../models/AlgorithmModel'
 import { JobModel } from '../models/JobModel'
 const fs = require('fs')
@@ -73,16 +72,13 @@ module.exports.index = async (req: Request, res: Response) => {
 
   try {
     // find all jobs where publicaddress.userid is the same as jobs.userId
-    console.log('whatup')
     const jobs = await JobModel.find({
       userId: mongoose.Types.ObjectId(userId)
     }).populate('algorithmId', 'algoName')
 
-    console.log('helloooo', jobs)
-
     if (!jobs) throw new Error('There are no jobs associated with this user')
+
     res.status(200).json(jobs)
-    console.log(jobs)
   } catch (error) {
     res.status(400).send({
       message: 'Cannot get the jobs for this user',

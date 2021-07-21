@@ -1,4 +1,3 @@
-// import { recoverPersonalSignature } from 'eth-sig-util';
 import { NextFunction, Request, Response } from 'express'
 import { UserModel, IUser } from '../models/UserModel'
 const { recoverPersonalSignature } = require('eth-sig-util')
