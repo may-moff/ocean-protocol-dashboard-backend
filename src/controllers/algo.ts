@@ -76,7 +76,9 @@ module.exports.update = async (req: Request, res: Response) => {
 
     const rules = req.body.parseKeys
       .map((e: ParseKeys) =>
-        req.body.defaultKeys.includes(e.key) ? null : e.key
+        req.body.defaultKeys.includes(e.key)
+          ? null
+          : e.key.replace(/_/g, ' ').toLocaleLowerCase()
       )
       .filter((e: string) => e !== null)
 
@@ -84,7 +86,6 @@ module.exports.update = async (req: Request, res: Response) => {
     const jobFilter = { _id: req.body.jobId }
     const jobUpdate = { result: output.result }
     await JobModel.findByIdAndUpdate(jobFilter, jobUpdate)
-
     const updatedParseKeys = output.parseKeys.map((e: ParseKeys) => {
       const currentElement = req.body.parseKeys.find(
         (x: ParseKeys) => x.key === e.key
@@ -109,7 +110,7 @@ module.exports.update = async (req: Request, res: Response) => {
       rules
     })
   } catch (error) {
-    res.status(400).send({ message: 'no no no' })
+    res.status(400).send({ error, message: 'no no no' })
   }
 
   // const algorithmId: string = req.params.algoId

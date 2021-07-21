@@ -1,6 +1,5 @@
 const fs2 = require('fs')
 const dayjs = require('dayjs')
-// const filePath = 'public/algorithm.log'
 
 interface Results {
   [x: string]: string | number
@@ -11,18 +10,6 @@ interface Rule {
   dataType: string
   visualize: boolean
 }
-
-/* const userKeys = [
-  'Start Time',
-  'End Time',
-  'Start counting lines for',
-  'Name',
-  'Type',
-  'Version',
-  'Memory',
-  'Size',
-  'Found directory at',
-]; */
 
 const splitDataToArr = (filePath: string) => {
   // eslint-disable-next-line security/detect-non-literal-fs-filename
@@ -38,7 +25,9 @@ const addCPU = (arr: string[], separator: string) => {
     }
     for (let j = 0; j < cpuMakers.length; j++) {
       if (arr[i].toLocaleLowerCase().includes(cpuMakers[j])) {
-        return `CPU${separator} ${arr[i]}`
+        const output = [...arr]
+        output[i] = `CPU${separator} ${arr[i]}`
+        return output
       }
     }
   }
@@ -52,6 +41,17 @@ const findDataType = (value: string | number) => {
     return 'timestamp'
   }
   return 'string'
+}
+
+const findAndReplaceCustomRules = (
+  str: string,
+  find: string,
+  separator: string
+) => {
+  // looks for a match in a string 'case-insensitive-
+  var reg = new RegExp(`(${find})`, 'gi')
+  // $1 returns the first match in a RegExp
+  return str.replace(reg, `$1${separator}`)
 }
 
 const addUserKeyValue = (
@@ -68,9 +68,13 @@ const addUserKeyValue = (
       if (
         arr[i].toLocaleLowerCase().includes(userInput[j].toLocaleLowerCase())
       ) {
-        const newKeyValue = arr[i].replace(
+        // const newKeyValue = arr[i]
+        //   .toLocaleLowerCase()
+        //   .replace(userInput[j], `${userInput[j]}${separator}`)
+        const newKeyValue = findAndReplaceCustomRules(
+          arr[i],
           userInput[j],
-          `${userInput[j]}${separator}`
+          separator
         )
         output.push(newKeyValue)
       }
@@ -85,16 +89,12 @@ const basicKeyValueSplit = (
   whitelist: string,
   userInput: string[]
 ) => {
-  const input = [...arr]
-  // Adding custom line to input array for cpu maker
-  const CPU = addCPU(input, separator)
-  if (CPU) {
-    input.push(CPU)
-  }
-  // Adding custom lines to input array for user selected keys
+  const inputWithCpu = addCPU(arr, separator)
+  const input = inputWithCpu ? [...inputWithCpu] : [...arr]
+
   const userKeyValues = addUserKeyValue(input, userInput, separator)
   if (userKeyValues.length > 0) {
-    userKeyValues.forEach((value) => input.push(value))
+    userKeyValues.forEach((value) => input.unshift(value))
   }
   const output: Results = {}
   const specialCharRegExList = `[&/\\,+()$~%.#'":*?<>{}-]`
@@ -126,7 +126,7 @@ const basicKeyValueSplit = (
         // remove all extra spaces
         .replace(/^\s+|\s+$/g, '')
         // TEMPORARY SOLUTION TO DEAL WITH '# OF' IN THE LOG FILE
-        .replace('# of', 'number of')
+        // .replace('# of', 'number of')
         .replace(/\s+/g, '_')
         .toLocaleUpperCase()
 
@@ -150,8 +150,8 @@ const basicKeyValueSplit = (
       }
     }
 
-    if (arr[i].replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/gm, '') !== '') {
-      output[`DEFAULT_${i}`] = arr[i].replace(
+    if (input[i].replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/gm, '') !== '') {
+      output[`DEFAULT_${i}`] = input[i].replace(
         /^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/gm,
         ''
       )
@@ -190,9 +190,5 @@ const parseFunction = (
   const parseKeys = createRules(keyValueObject)
   return { result: keyValueObject, parseKeys }
 }
-// console.log(parseFunction(filePath, ':', '#', userKeys));
-
-// const test = parseFunction(filePath, ':', '#');
-// console.log(test);
 
 module.exports = parseFunction
