@@ -58,7 +58,7 @@ module.exports.create = async (req: Request, res: Response) => {
       dataName,
       rules: [],
       filePath: job.filePath,
-      date
+      date: job.date
     })
   } catch (error) {
     if (error === 'file not available')
@@ -68,10 +68,14 @@ module.exports.create = async (req: Request, res: Response) => {
 }
 
 module.exports.index = async (req: Request, res: Response) => {
+  const { userId } = req.params
+
   try {
     // find all jobs where publicaddress.userid is the same as jobs.userId
     console.log('whatup')
-    const jobs = await JobModel.find({})
+    const jobs = await JobModel.find({
+      userId: mongoose.Types.ObjectId(userId)
+    })
     res.status(200).json(jobs)
     console.log(jobs)
   } catch (error) {
