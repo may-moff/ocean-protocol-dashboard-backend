@@ -1,6 +1,6 @@
 require('dotenv').config()
 
-const config = {
+const jwtConfig = {
   algorithms: ['HS256' as const],
   // used a ! at the end as 'non-null assertion operator'.
   // It tells TypeScript that even though something looks
@@ -8,4 +8,4 @@ const config = {
   secret: process.env.JWT_SECRET!
 }
 
-module.exports = config
+module.exports = jwtConfig

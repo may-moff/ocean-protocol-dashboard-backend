@@ -1,11 +1,10 @@
-// import { recoverPersonalSignature } from 'eth-sig-util';
 import { NextFunction, Request, Response } from 'express'
 import { UserModel, IUser } from '../models/UserModel'
 const { recoverPersonalSignature } = require('eth-sig-util')
 const ethereumjsUtil = require('ethereumjs-util')
 const { bufferToHex } = ethereumjsUtil
 const jwt = require('jsonwebtoken')
-const config = require('../config')
+const jwtConfig = require('../jwt-config')
 
 module.exports.create = (req: Request, res: Response, next: NextFunction) => {
   const { signature, publicAddress } = req.body
@@ -80,9 +79,9 @@ module.exports.create = (req: Request, res: Response, next: NextFunction) => {
                 publicAddress
               }
             },
-            config.secret,
+            jwtConfig.secret,
             {
-              algorithm: config.algorithms[0]
+              algorithm: jwtConfig.algorithms[0]
             },
             (err: any, token: string | PromiseLike<string>) => {
               if (err) {

@@ -5,9 +5,7 @@ const upload = multer({ dest: 'public/uploads/' })
 
 export const jobsRouter = express.Router({ mergeParams: true })
 
-/** POST /api/jobs */
-// jobsRouter.post('/', controller.create);
-
+// Authenticated routes
 jobsRouter.post('/', upload.single('logBlob'), controller.create)
 jobsRouter.get('/', controller.index)
 jobsRouter.get('/:jobId', controller.show)
