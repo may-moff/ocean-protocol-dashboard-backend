@@ -72,6 +72,7 @@ module.exports.index = async (req: Request, res: Response) => {
 
   try {
     // find all jobs where publicaddress.userid is the same as jobs.userId
+
     const jobs = await JobModel.find({
       userId: mongoose.Types.ObjectId(userId)
     }).populate('algorithmId', 'algoName')
@@ -100,7 +101,6 @@ module.exports.show = async (req: Request, res: Response) => {
     })
     res.status(200).json(allJobs)
   } catch (error) {
-    console.log(error)
     res.status(400).send({ message: 'Cannot get jobs', error })
   }
 }
