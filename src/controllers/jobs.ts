@@ -70,13 +70,14 @@ module.exports.create = async (req: Request, res: Response) => {
 
 module.exports.index = async (req: Request, res: Response) => {
   const { userId } = req.params
-
+  console.log('im listing sll jobs')
   try {
     const jobs = await JobModel.find({
       userId: mongoose.Types.ObjectId(userId)
     }).populate('algorithmId', 'algoName')
 
     if (!jobs) throw new Error('There are no jobs associated with this user')
+
     res.status(200).json(jobs)
   } catch (error) {
     res.status(400).send({
@@ -87,6 +88,7 @@ module.exports.index = async (req: Request, res: Response) => {
 }
 
 module.exports.show = async (req: Request, res: Response) => {
+  console.log('i am showing one job')
   const { jobId, userId } = req.params
   try {
     const job = await JobModel.findById(jobId)
@@ -96,7 +98,9 @@ module.exports.show = async (req: Request, res: Response) => {
     const allJobs = await JobModel.find({
       algorithmId: mongoose.Types.ObjectId(algorithmId),
       userId: mongoose.Types.ObjectId(userId)
-    })
+    }).populate('algorithmId', 'algoName')
+    console.log(allJobs)
+
     res.status(200).json(allJobs)
   } catch (error) {
     res.status(400).send({ message: 'Cannot get jobs', error })
