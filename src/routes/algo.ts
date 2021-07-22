@@ -3,6 +3,7 @@ const controller = require('../controllers/algo')
 
 export const algoRouter = express.Router({ mergeParams: true })
 
+// Authenticated routes
 algoRouter.post('/', controller.create)
 algoRouter.get('/', controller.show)
 algoRouter.get('/index', controller.index)
