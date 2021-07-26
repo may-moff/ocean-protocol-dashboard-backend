@@ -23,7 +23,6 @@ module.exports.create = async (req: Request, res: Response) => {
     if (!file) throw new Error('file not available')
 
     const result = await uploadFile(file)
-
     const output = parseFunction(file.path, ':', '#')
     const job = new JobModel({
       jobName,
