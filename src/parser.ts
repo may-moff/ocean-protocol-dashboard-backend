@@ -33,12 +33,26 @@ const addCPU = (arr: string[], separator: string) => {
   }
 }
 
+const findValueWithMeasureUnit = (str: string) => {
+  const res = str.match(/^(-?[\d.]+)([a-z%]*)$/i)
+  if (res === null) return 'Invalid input'
+  if (Number.isNaN(Number(res[1])) || !res[2]) return 'string'
+  // const output = {
+  //   val: parseFloat(res[1]),
+  //   unit: res[2]
+  // }
+  return 'number_um'
+}
+
 const findDataType = (value: string | number) => {
   if (typeof value === 'number') {
     return 'number'
   }
   if (dayjs(value).isValid()) {
     return 'timestamp'
+  }
+  if (findValueWithMeasureUnit(value) === 'number_um') {
+    return 'number_um'
   }
   return 'string'
 }
@@ -68,9 +82,6 @@ const addUserKeyValue = (
       if (
         arr[i].toLocaleLowerCase().includes(userInput[j].toLocaleLowerCase())
       ) {
-        // const newKeyValue = arr[i]
-        //   .toLocaleLowerCase()
-        //   .replace(userInput[j], `${userInput[j]}${separator}`)
         const newKeyValue = findAndReplaceCustomRules(
           arr[i],
           userInput[j],
