@@ -37,7 +37,7 @@ const jobSchema = new Schema<IJob>({
   },
 
   result: {
-    type: [Schema.Types.Mixed]
+    type: Schema.Types.Mixed
   },
 
   date: { type: Date, default: Date.now }
