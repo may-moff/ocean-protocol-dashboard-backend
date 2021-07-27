@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { AlgorithmModel } from '../models/AlgorithmModel'
-import { JobModel } from '../models/JobModel'
+import { JobModel, IJob } from '../models/JobModel'
 const fs = require('fs')
 const { uploadFile } = require('../aws-config')
 const parseFunction = require('../parser')
@@ -12,6 +12,17 @@ interface ParseKeys {
   key: string
   dataType: string
   visualize: boolean
+  value?: string | number
+}
+
+interface IJobWithValues extends IJob {
+  parseKeys?: {
+    key: string
+    dataType: string
+    visualize: boolean
+    value: string | number
+  }[]
+  // parseKeys: ParseKeys
 }
 
 module.exports.create = async (req: Request, res: Response) => {
@@ -89,20 +100,48 @@ module.exports.index = async (req: Request, res: Response) => {
 }
 
 module.exports.show = async (req: Request, res: Response) => {
-  console.log('i am showing one job')
   const { jobId, userId } = req.params
   try {
-    const job = await JobModel.findById(jobId)
-    if (!job) throw new Error('Job not found')
-    // const algorithmId = job.algorithmId
-    const { algorithmId } = job
-    const allJobs = await JobModel.find({
-      algorithmId: mongoose.Types.ObjectId(algorithmId),
-      userId: mongoose.Types.ObjectId(userId)
-    }).populate('algorithmId', 'algoName')
-    console.log(allJobs)
+    const currentJob: any = await JobModel.findById(jobId).populate(
+      'algorithmId',
+      'algoName'
+    )
+    if (!currentJob) throw new Error('Job not found')
+    const algorithmId = currentJob.algorithmId._id
+    const currentAlgorithm = await AlgorithmModel.findById(algorithmId)
+    if (!currentAlgorithm) throw new Error('Algorithm not found')
 
-    res.status(200).json(allJobs)
+    const currentParseKeysWithValue = currentAlgorithm.parseKeys.map(
+      (e: any) => {
+        return { ...e._doc, value: currentJob.result[e.key] }
+      }
+    )
+
+    const allJobs = (
+      await JobModel.find({
+        algorithmId: mongoose.Types.ObjectId(algorithmId),
+        userId: mongoose.Types.ObjectId(userId)
+      })
+    ).filter((e: any) => e._id.toString() !== jobId)
+
+    const allJobsOutput = allJobs.map((e: any) => {
+      const parseKeys = currentAlgorithm.parseKeys.map((x: any) => {
+        return { ...x._doc, value: e.result[x.key] }
+      })
+      return { ...e._doc, parseKeys }
+    })
+
+    delete currentJob._doc.result
+    allJobsOutput.forEach((e: any) => delete e.result)
+
+    console.log({
+      currentJob: { ...currentJob._doc, parseKeys: currentParseKeysWithValue },
+      otherJobs: allJobsOutput
+    })
+    res.status(200).json({
+      currentJob: { ...currentJob._doc, parseKeys: currentParseKeysWithValue },
+      otherJobs: allJobsOutput
+    })
   } catch (error) {
     res.status(400).send({ message: 'Cannot get jobs', error })
   }
