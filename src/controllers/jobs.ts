@@ -80,7 +80,6 @@ module.exports.create = async (req: Request, res: Response) => {
 
 module.exports.index = async (req: Request, res: Response) => {
   const { userId } = req.params
-  console.log('im listing sll jobs')
   try {
     // find all jobs where publicaddress.userid is the same as jobs.userId
 
@@ -134,10 +133,6 @@ module.exports.show = async (req: Request, res: Response) => {
     delete currentJob._doc.result
     allJobsOutput.forEach((e: any) => delete e.result)
 
-    console.log({
-      currentJob: { ...currentJob._doc, parseKeys: currentParseKeysWithValue },
-      otherJobs: allJobsOutput
-    })
     res.status(200).json({
       currentJob: { ...currentJob._doc, parseKeys: currentParseKeysWithValue },
       otherJobs: allJobsOutput
