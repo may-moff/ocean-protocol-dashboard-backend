@@ -122,9 +122,7 @@ module.exports.show = async (req: Request, res: Response) => {
         algorithmId: mongoose.Types.ObjectId(algorithmId),
         userId: mongoose.Types.ObjectId(userId)
       })
-    ).filter((e: any) => {
-      e._id !== jobId
-    })
+    ).filter((e: any) => e._id.toString() !== jobId)
 
     const allJobsOutput = allJobs.map((e: any) => {
       const parseKeys = currentAlgorithm.parseKeys.map((x: any) => {
@@ -137,12 +135,12 @@ module.exports.show = async (req: Request, res: Response) => {
     allJobsOutput.forEach((e: any) => delete e.result)
 
     console.log({
-      current: { ...currentJob._doc, parseKeys: currentParseKeysWithValue },
-      others: allJobsOutput
+      currentJob: { ...currentJob._doc, parseKeys: currentParseKeysWithValue },
+      otherJobs: allJobsOutput
     })
     res.status(200).json({
-      current: { ...currentJob._doc, parseKeys: currentParseKeysWithValue },
-      others: allJobsOutput
+      currentJob: { ...currentJob._doc, parseKeys: currentParseKeysWithValue },
+      otherJobs: allJobsOutput
     })
   } catch (error) {
     res.status(400).send({ message: 'Cannot get jobs', error })
