@@ -44,8 +44,7 @@ const jobSchema = new Schema<IJob>({
     type: Schema.Types.Mixed
   },
 
-  date: { type: Date, default: Date.now },
-  required: true
+  date: { type: Date, default: Date.now, required: true }
 })
 
 export const JobModel = model<IJob>('Job', jobSchema)
