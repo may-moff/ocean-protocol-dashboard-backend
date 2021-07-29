@@ -37,10 +37,7 @@ const findValueWithMeasureUnit = (str: string) => {
   const res = str.match(/^(-?[\d.]+)([a-z%]*)$/i)
   if (res === null) return 'Invalid input'
   if (Number.isNaN(Number(res[1])) || !res[2]) return 'string'
-  // const output = {
-  //   val: parseFloat(res[1]),
-  //   unit: res[2]
-  // }
+
   return 'number_um'
 }
 

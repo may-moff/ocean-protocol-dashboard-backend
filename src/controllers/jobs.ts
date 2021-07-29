@@ -22,7 +22,6 @@ interface IJobWithValues extends IJob {
     visualize: boolean
     value: string | number
   }[]
-  // parseKeys: ParseKeys
 }
 
 module.exports.create = async (req: Request, res: Response) => {
@@ -72,7 +71,7 @@ module.exports.create = async (req: Request, res: Response) => {
       userId
     })
   } catch (error) {
-    if (error === 'file not available')
+    if (error === 'File not available')
       res.status(400).send({ message: "Can't access file", error })
     res.status(400).send({ message: "Can't save job", error })
   }
@@ -81,8 +80,6 @@ module.exports.create = async (req: Request, res: Response) => {
 module.exports.index = async (req: Request, res: Response) => {
   const { userId } = req.params
   try {
-    // find all jobs where publicaddress.userid is the same as jobs.userId
-
     const jobs = await JobModel.find({
       userId: mongoose.Types.ObjectId(userId)
     }).populate('algorithmId', 'algoName')
@@ -138,6 +135,6 @@ module.exports.show = async (req: Request, res: Response) => {
       otherJobs: allJobsOutput
     })
   } catch (error) {
-    res.status(400).send({ message: 'Cannot get jobs', error })
+    res.status(400).send({ message: "Can't show jobs", error })
   }
 }

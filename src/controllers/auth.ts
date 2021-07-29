@@ -11,7 +11,7 @@ module.exports.create = (req: Request, res: Response, next: NextFunction) => {
   if (!signature || !publicAddress)
     return res
       .status(400)
-      .send({ error: 'Request should have signature and publicAddress' })
+      .send({ error: 'Request should have a signature and a publicAddress' })
 
   return (
     UserModel.findOne({ publicAddress })
@@ -19,7 +19,7 @@ module.exports.create = (req: Request, res: Response, next: NextFunction) => {
       .then((user) => {
         if (!user) {
           res.status(401).send({
-            error: `User with publicAddress ${publicAddress} is not found in database`
+            error: `User with publicAddress ${publicAddress} not found in database`
           })
 
           return null
