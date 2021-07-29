@@ -42,7 +42,7 @@ module.exports.create = async (req: Request, res: Response) => {
       res.status(400).send({ message: 'Invalid user', error })
     }
 
-    res.status(400).send({ message: "Can't save algorithm", error })
+    res.status(400).send({ message: 'Unable to save the algorithm', error })
   }
 }
 
@@ -52,7 +52,7 @@ module.exports.show = async (req: Request, res: Response, data: any) => {
     const algorithm = await AlgorithmModel.findOne({ algoName })
     res.status(200).json(algorithm)
   } catch (error) {
-    res.status(400).send({ message: 'cant get the algo', error })
+    res.status(400).send({ message: 'Unable to retrieve the algorithm', error })
   }
 }
 
@@ -62,7 +62,9 @@ module.exports.index = async (req: Request, res: Response) => {
     const algorithms = await AlgorithmModel.find({})
     res.status(200).json(algorithms)
   } catch (error) {
-    res.status(400).send({ message: 'cant get all algos', error })
+    res
+      .status(400)
+      .send({ message: 'Unable to retrieve the algorithm list', error })
   }
 }
 
@@ -110,6 +112,6 @@ module.exports.update = async (req: Request, res: Response) => {
       rules
     })
   } catch (error) {
-    res.status(400).send({ error, message: 'no no no' })
+    res.status(400).send({ error, message: 'Unable to update the algorithm' })
   }
 }

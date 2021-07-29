@@ -16,20 +16,24 @@ export interface IJob {
 
 const jobSchema = new Schema<IJob>({
   jobName: {
-    type: String
+    type: String,
+    required: true
   },
 
   algorithmId: {
     type: Schema.Types.ObjectId,
-    ref: 'Algorithm'
+    ref: 'Algorithm',
+    required: true
   },
   dataName: {
-    type: String
+    type: String,
+    required: true
   },
 
   userId: {
     type: Schema.Types.ObjectId,
-    ref: 'User'
+    ref: 'User',
+    required: true
   },
 
   filePath: {
@@ -37,10 +41,10 @@ const jobSchema = new Schema<IJob>({
   },
 
   result: {
-    type: [Schema.Types.Mixed]
+    type: Schema.Types.Mixed
   },
 
-  date: { type: Date, default: Date.now }
+  date: { type: Date, default: Date.now, required: true }
 })
 
 export const JobModel = model<IJob>('Job', jobSchema)

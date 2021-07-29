@@ -18,7 +18,8 @@ const algorithmSchema = new Schema<IAlgorithm>({
   },
   userId: {
     type: Schema.Types.ObjectId,
-    ref: 'User'
+    ref: 'User',
+    required: true
   },
   parseKeys: [
     {
